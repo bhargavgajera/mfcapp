@@ -1,0 +1,122 @@
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class=" product-page">
+    <div class="bar bar-subheader bar-stable">
+        <div class="pull-left left-title"><a><!--<i class="ico-leftarrow icon"></i>-->{{productTitle}}</a></div>
+        <h2 class="title">Dunlop Acifort Wellingtons</h2>
+        <!--<div class="sort pull-right">
+               <label class="item-select">
+                <select>
+                    <option>Blue</option>
+                    <option selected>Green</option>
+                    <option>Red</option>
+                </select>
+            </label>
+        </div>-->
+    </div>
+
+    <ion-content class="has-subheader full-width" has-bouncing="true">
+        <div class="product-wrapper">
+            <div class="row">
+                <div class="col col-33">
+                    <div class="product-image">
+                        
+                        <img ng-src="{{product.Image || 'img/noimage.jpg'}}">
+                    </div>
+                </div>
+                <div class="col col-33">
+                    <h1 ng-bind="product.ProdTitle"></h1>
+                    <h2>from <span class="positive">{{product.PriceIncVat | currency:"£"}}</span> inc VAT</h2>
+                    <h3><span class="positive">{{product.PriceExVat | currency:"£" }}</span> ex VAT</h3>
+
+                    <div class="product-meta">
+                        <span class="code" ng-bind="product.ProdCode"></span>|<span class="stock balanced" ng-if="product.ProdStockQty">In Stok</span><span class="stock assertive" ng-if="!product.ProdStockQty">Out of Stok</span>
+                    </div>
+
+                    <div class="product-detail" ng-bind-html="product.ProdDesc">
+                    </div>
+                </div>
+                <div class="col col-33">
+                    <div class="product-form">
+                        <ul class="list">
+                           
+                            <li class="item">
+                                <label class="item-select arrow-positive">
+                                   <input type="number" name="qty"  min="1" max="product.ProdStockQty" value="1"  ng-model="data.Qty">
+                                </label>
+                               
+                            </li>
+                            <li class="item">
+                                <button class="button button-small  button-positive" ng-disabled="!product.ProdStockQty" ng-click="addtoBasket(product.ProdID,product.ProdTitle,product.ProdUnitPrice,data.Qty)">
+                                    Add to Basket
+                                </button>
+                            </li>
+                        </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="productlist">
+        <div class="list">
+            <li class="item">
+                <strong>Related Products</strong>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block">
+                        <div class="errmsg assertive">price is unavailable</div>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block">
+                        <div class="price"><span class="positive">$16.09</span><em>ex VAT</em></div>
+                        <div class="price"><span class="positive">$19.31</span><em>inc VAT</em></div>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block"><span class="errmsg assertive">price is unavailable</span></div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block"><span class="errmsg assertive">price is unavailable</span></div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block">
+                        <div class="price"><span class="positive">$18.43</span><em>ex VAT</em></div>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="id">7682</div>
+                    <div class="title">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                    <div class="price-block"><span class="errmsg assertive">price is unavailable</span></div>
+                </div>
+            </li>
+
+        </div>
+        </div>
+        </div>
+    </ion-content>
+
+    
+
+
+</ion-view>

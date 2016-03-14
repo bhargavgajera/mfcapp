@@ -1,0 +1,39 @@
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="accountdetail-page"> 
+    <ion-content  has-bouncing="true">
+        <div class="card" >
+          <div class="item-text-wrap" ng-if="accountPage == 'detail'">
+                <div class="item item-divider">Account Details  </div>
+                <div class="item row" ng-if="mAccount.AccountId">  <div class="col col-50"><strong>Id</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.AccountId}}</div></div>
+                <div class="item row" ng-if="mAccount.AccountNumber">  <div class="col col-50"><strong>Number</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.AccountNumber}}</div></div>
+                <div class="item row" ng-if="mAccount.AccountCompany">  <div class="col col-50"><strong>Company</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.AccountCompany}}</div></div>
+                <div class="item row" ng-if="mAccount.AccountTerritory">  <div class="col col-50"><strong>Territory</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.AccountTerritory}}</div></div>
+                <div class="item row" ng-if="mAccount.Title">  <div class="col col-50"><strong> Title</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.Title}}</div></div>
+                <div class="item row" ng-if="mAccount.FirstName">  <div class="col col-50"><strong> FirstName</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.FirstName}}</div></div>
+                <div class="item row" ng-if="mAccount.Surname">  <div class="col col-50"><strong>Surname</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.Surname}}</div></div>
+                <div class="item row" ng-if="mAccount.Telephone">  <div class="col col-50"><strong>Telephone</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.Telephone}}</div></div>
+                <div class="item row" ng-if="mAccount.Mobile">  <div class="col col-50"><strong>Mobile</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.Mobile}}</div></div>
+                <div class="item row" ng-if="mAccount.EmailAddress">  <div class="col col-50"><strong>Email Address</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.EmailAddress}}</div></div>
+            </div>
+            
+            <div class="item-text-wrap" ng-if="accountPage == 'invoice'">
+               <div class="item item-divider">Invoice Address </div>
+                <div class="item row" ng-if="mAccount.BillingHouseName">  <div class="col col-50"><strong>Billing HouseName</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.BillingHouseName}}</div></div>
+                <div class="item row" ng-if="mAccount.BillingAddressLine1">  <div class="col col-50"><strong>Billing AddressLine1</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.BillingAddressLine1}}</div></div>
+                <div class="item row" ng-if="mAccount.BillingAddressLine2">  <div class="col col-50"><strong>Billing AddressLine2</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.BillingAddressLine2}}</div></div>
+                <div class="item row" ng-if="mAccount.BillingTown">  <div class="col col-50"><strong>Billing Town</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.BillingTown}}</div></div>
+            </div>
+            <div class="item-text-wrap" ng-if="accountPage == 'delivery'">
+               <div class="item item-divider"> Delivery Address(es)</div>
+                <div class="item row" ng-if="mAccount.DeliverySurname">  <div class="col col-50"><strong>Delivery Surname</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliverySurname}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryHouseName">  <div class="col col-50"><strong>Delivery HouseName</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryHouseName}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryAddressLine1">  <div class="col col-50"><strong>Delivery AddressLine1</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryAddressLine1}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryAddressLine2">  <div class="col col-50"><strong>Delivery AddressLine2</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryAddressLine2}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryTown">  <div class="col col-50"><strong>Delivery Town</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryTown}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryCounty">  <div class="col col-50"><strong>Delivery County</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryCounty}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryPostcode">  <div class="col col-50"><strong>Delivery Postcode</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryPostcode}}</div></div>
+                <div class="item row" ng-if="mAccount.DeliveryCountry">  <div class="col col-50"><strong>Delivery Country</strong></div><div class="col col-50"><strong>:</strong>  {{mAccount.DeliveryCountry}}</div></div>
+                </div>
+                <div class="item" ng-if="!Account"><p>No account data found</p></div>
+        </div>
+    </ion-content>
+</ion-view>

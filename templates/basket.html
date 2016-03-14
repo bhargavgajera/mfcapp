@@ -1,0 +1,67 @@
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="basket-page">
+    <div class="bar bar-subheader bar-stable">
+        <h2 class="title">Basket</h2>
+    </div>
+
+    <ion-content class="has-subheader has-footer full-width" has-bouncing="true">
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Product</th>
+                    <th width="120">Quantity</th>
+                    <th>Remove</th>
+                    <th >Unit Price(ex VAT)</th>
+                    <th width="150">Total (ex VAT)</th>
+                    <th width="100">Total (incVAT)</th>
+                </tr>
+                
+                <tr ng-repeat="product in basketList track by $index" >
+                    <td valign="top" class="name" ng-bind="product.ProdTitle"></td>
+                     <td valign="top" class="delete hide-tab">
+                        <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"> <i class="ico-delete icon-big"></i></button>
+                    </td>
+                    <td valign="top" class="qty">
+                        <label class="item-select arrow-positive">
+                            <input type="number" name="qty" ng-model="priceData[$index].qty" ng-blur="updateQty(product.basketID,priceData[$index].qty)">
+                        </label>
+                    </td>
+                    <td valign="top" class="delete hide-phone">
+                        <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)" ><i class="ico-delete icon-big"></i></button>
+                    </td>
+                    <td valign="top" class="price">
+                        <input type="text" class="simple-input" ng-model="priceData[$index].uprice" ng-blur="updatePrice(product.basketID,priceData[$index].uprice)">
+                    </td>
+                    <td valign="top" class="positive exvat"><p class="label hide-tab">Total (ex VAT)</p>{{(priceData[$index].qty * priceData[$index].uprice) | currency : '£'}}</td>
+                    <td valign="top" class="positive incvat"><p class="label hide-tab">Total (inc VAT)</p>{{$index | currency : '£'}}</td>
+                </tr>
+                <tr ng-show="basketList.length < 1">
+                    <td colspan="5"><h4>There are no any product in the Basket</h4></td>
+                </tr>
+               
+                <tr class="gray align-left" ng-show="basketList.length">
+                    <td valign="top" colspan="4" class="cell-mrg"></td>
+                    <td valign="top" class="alignleft">
+                       <p>Total(ex VAT)</p>
+                        <p>Vat Total</p>
+                    <td valign="top" class="positive "><p>$566.11</p><p>$94.35</p></td>
+                </tr>
+                <tr class="grandtotal " ng-show="basketList.length">
+                    <td valign="top" colspan="4" class="cell-mrg"></td>
+                    <td valign="top" class="alignleft"><p>Total Goods(inc VAT)</p>
+                        <p>Delivery(inc VAT)</p>
+                        <p>Grand Total(inc VAT)</p>
+                    <td valign="top" class="positive">
+                    <p>{{totalPrice | currency : '£'}}</p>
+                    <p>FREE</p>
+                    <p>{{totalPrice | currency : '£'}}</p>
+                </tr>
+
+            </table>
+        </div>
+        <div class="row">
+  <div class="col col-50"><a ng-click="updateBasket()" class="button button-positive">updateBasket</a></div>
+  <div class="col col-50"><a ng-click="checkout()" class="button pull-right button-positive" ng-disabled="basketList.length < 1">Checkout</a></div>
+        </div>   
+        
+    </ion-content>
+</ion-view>

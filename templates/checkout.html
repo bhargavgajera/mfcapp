@@ -1,0 +1,69 @@
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="checkout-page">
+    <div class="bar bar-subheader bar-stable">
+        <h2 class="title">Place Order</h2>
+    </div>
+
+    <ion-content class="has-subheader has-footer full-width" has-bouncing="true">
+        
+        
+        
+         
+        
+        
+        <div class="row checkout-detail">
+  <div class="col col-50 products">
+       <h4 class="positive">Your Purchases :</h4>
+        <div class="row" ng-repeat="product in basketList track by $index">
+            <div class="col col-50 title">{{product.ProdTitle}}</div>
+            <div class="col col-50 price">{{(priceData[$index].uprice * priceData[$index].qty) | currency : '£'}}</div>
+       </div> 
+        
+        <br>
+      <div class="row">
+            <div class="col col-50 title">Delivery<small>(ex VAT)</small></div>
+            <div class="col col-50 price">£0</div>
+      </div>
+      <div class="row">
+            <div class="col col-50 title">Sub Total<small>(ex VAT)</small></div>
+            <div class="col col-50 price"></div>
+      </div>
+      <div class="row">
+            <div class="col col-50 title">VAT Total</div>
+            <div class="col col-50 price"></div>
+      </div>
+      
+  </div>
+  <div class="col col-50 address">
+           <h4 class="positive">Shiping Address :</h4><br>
+               
+               <div class="row" ng-if="mAccount.DeliveryTitle"><div class="col col-50" >Title</div> <div class="col col-50 price">{{mAccount.DeliveryTitle}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryFirstName"><div class="col col-50" >First Name</div> <div class="col col-50 price">{{mAccount.DeliveryFirstName}}</div></div>
+               <div class="row" ng-if="mAccount.DeliverySurname"><div class="col col-50" >Surname</div> <div class="col col-50 price">{{mAccount.DeliverySurname}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryHouseName"><div class="col col-50" >House Name</div> <div class="col col-50 price">{{mAccount.DeliveryHouseName}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryAddressLine1 || mAccount.DeliveryAddressLine2" ><div class="col col-50" >Address</div> <div class="col col-50 price">{{mAccount.DeliveryAddressLine1}}<br>{{mAccount.DeliveryAddressLine2}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryTown"><div class="col col-50" >Town</div> <div class="col col-50 price">{{mAccount.DeliveryTown}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryCountry"><div class="col col-50" >Country</div> <div class="col col-50 price">{{mAccount.DeliveryCountry}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryCounty"><div class="col col-50" >County</div> <div class="col col-50 price">{{mAccount.DeliveryCounty}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryPostcode"><div class="col col-50" >Postcode</div> <div class="col col-50 price">{{mAccount.DeliveryPostcode}}</div></div>
+               <div class="row" ng-if="mAccount.DeliveryRefrenceName"><div class="col col-50" >Refrence Name</div> <div class="col col-50 price">{{mAccount.DeliveryRefrenceName}}</div></div>
+           
+           <br>
+           <h4 class="positive">Billing Address :</h4><br>
+        
+        <div class="row" ng-if="mAccount.BillingHouseName"><div class="col col-50 title">House Name</div><div class="col col-50 price">{{mAccount.BillingHouseName}}</div></div>
+        <div class="row" ng-if="mAccount.BillingAddressLine1 || mAccount.BillingAddressLine2"><div class="col col-50 title">Address</div><div class="col col-50 price">{{mAccount.BillingAddressLine1}}<br>{{mAccount.BillingAddressLine2}}</div></div>
+        <div class="row" ng-if="mAccount.BillingTown"><div class="col col-50 title">Town</div><div class="col col-50 price">{{mAccount.BillingTown}}</div></div>
+        <div class="row" ng-if="mAccount.BillingCountry"><div class="col col-50 title">Country</div><div class="col col-50 price">{{mAccount.BillingCountry}}</div></div>
+        <div class="row" ng-if="mAccount.BillingPostcode"><div class="col col-50 title">Postcode</div><div class="col col-50 price">{{mAccount.BillingPostcode}}</div></div>
+        
+           
+       
+        </div>
+        </div>
+        <div class="row">
+        <div class="col col-50"></div>
+        <div class="col col-50"><a ng-click="placeOrder()" class="button pull-right button-positive">Place Order</a></div>
+        </div>
+
+    </ion-content>
+</ion-view>

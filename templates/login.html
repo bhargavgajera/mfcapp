@@ -1,0 +1,27 @@
+<ion-view view-title="(BC15)Mr Brooke" class="login-page">
+    <ion-content has-bouncing="false" >
+       <div class="login-block">
+         <div class="logo"><img src="img/logo.png"></div>
+        <form ng-submit="doLogin(loginForm)" name="loginForm" novalidate >
+                <div class="list ">
+                    <label class="item item-input" ng-class="{'error':(loginForm.$submitted || loginForm.email.$touched) && loginForm.email.$invalid }">
+                        <input type="email" placeholder="Email Address" name="email" value="" ng-model="email" required >
+                    </label>
+                    <div class="error-msg" ng-show="(loginForm.$submitted || loginForm.email.$touched) && loginForm.email.$invalid ">
+  <div ng-show="loginForm.email.$error.required">Email is required</div>
+  <div ng-show="loginForm.email.$error.email">Your email address is invalid</div>
+</div>
+                    <label class="item item-input" ng-class="{'error':(loginForm.$submitted || loginForm.password.$touched) && loginForm.password.$invalid }">
+                        <input type="password" placeholder="Password" ng-model="password" value="" name="password" required>
+                    </label>
+                     <div class="error-msg" ng-show="(loginForm.$submitted || loginForm.password.$touched) && loginForm.password.$invalid ">
+  <div ng-show="loginForm.password.$error.required">Password is required</div>
+</div>
+                    
+                    <button class="button button-block button-positive" type="submit">Login</button>
+                    <a class="forgot-link" href="#">Forgot you password ?</a>
+                </div>
+        </form>
+        </div>
+    </ion-content>
+</ion-view>
