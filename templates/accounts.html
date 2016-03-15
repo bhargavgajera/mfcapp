@@ -4,13 +4,15 @@
 </div>
     <div class="bar bar-subheader  sub-search bar-stable ">
         <div class="container item-input-inset">
-            <label class="item-input-wrapper">
+             <form ng-submit="search(accountSearch)" class="search-form"  novalidate>
+               <label class="item-input-wrapper">
                 <i class="icon ico-search placeholder-icon positive"></i>
                 <input type="search" placeholder="Search Account" ng-model="accountSearch">
             </label>
-            <button class="button button-positive" ng-click="search(accountSearch)">
+            <button class="button button-positive" type="submit">
                 Search
             </button>
+            </form>
 
             <div class="price-toggle hide-phone">
                 <p>Show Rep Price? </p>

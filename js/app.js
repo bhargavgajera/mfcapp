@@ -24,7 +24,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
 	
     console.log($cordovaSQLite); 
     
-    $rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Orderhistory',sync:false}]; 
+    $rootScope.syncObj = [{title:'Placed Order',sync:false},{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Orderhistory',sync:false}]; 
     
     
     if (window.localStorage.getItem("mUser") != "undefined") {
