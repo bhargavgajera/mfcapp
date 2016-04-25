@@ -51,7 +51,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
             window.plugins.orientationLock.lock("portrait")
         }
         
-		 $rootScope.DB = $cordovaSQLite.openDB("mfc.db");
+		  $rootScope.DB = $cordovaSQLite.openDB({name: 'mfc.db', location: 'default'});
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS contacts (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, UserName TEXT, Password TEXT, CustType TEXT, CustRepTerritory TEXT, SaltUsed TEXT, RelatedAccountNumber TEXT)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX contacts_idx1 ON contacts(UserName)');
