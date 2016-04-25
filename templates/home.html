@@ -39,12 +39,11 @@
     </ion-nav-buttons>
 
     <ion-nav-buttons side="right">
-        <button class="button button-icon button-clear ion-android-sync" ng-click="syncData()">
+       <p ng-if="lastsyncDate" class="hide-phone ">Last Sync - {{lastsyncDate |  date : 'HH:mm dd-MM-yyyy '}}</p>
+        <button class="button button-icon button-clear ico-sync" ng-click="syncData()">
         </button>
         <button class="button button-icon button-clear ico-option" ng-click="showRightMenu()">
         </button>
     </ion-nav-buttons>
 </ion-nav-bar>
-
-
 <ion-nav-view name="appContent"></ion-nav-view>

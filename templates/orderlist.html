@@ -1,4 +1,4 @@
- <ion-view view-title="My orders" class="order-page ">
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="order-page ">
     <div class="tabs-top order-tabs">
         <div class="tabs">
             <a class="tab-item  button  " ng-click="bydate=true;byproduct=false" ng-class="{'active':bydate}">By Date</a>
@@ -15,110 +15,63 @@
                     </div>
                     <select>
                         <option>All </option>
-                        <option >Green</option>
+                        <option>Green</option>
                         <option>Red</option>
                     </select>
                 </label>
             </div>
-            <div class="order-wrapper" ng-repeat="order in orderhList  | orderBy:'orderHistoryDate':true track by $index" ng-show="orderhList.length > 0" >
-
-            <li class="item date-item" ng-if="checkDate(order.orderHistoryDate,$index)" >
-                <button class="button button-positive button-small pull-right"> <i class="ico-eye icon-big"></i></button>
+            
+            <li class="item date-item" ng-repeat="order in orderhList  | orderBy:'orderHistoryDate':true track by $index" ng-if="checkDate(order.orderHistoryDate,$index)" ng-show="orderhList.length > 0">
+                <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
                 <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
             </li>
-            <li class="item item-text-wrap" >
-                <div class="item-wrapper">
-                    <div class="content">
-                        <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
-                        <span class="qty positive">Qty:{{order.quantity}}</span>
-                        <p class="meta stable">Unit Price(Unit Cost): {{order.costPrice}} ({{order.operaCostPrice}}) | Stock Level: {{order.	
-prodStockQty}} | Current Price: TBC</p>
-                    </div>
-                    <div class="orderform">
-                        <div class="row">
-                            <div class="col col-50">
-                                <button class="button button-small button-outline button-positive" ng-click="addtoBasket(order.prodID, order.prodTitle, order.unitCost, 1)">Re-Order Qty</button>
-                            </div>
-                            <div class="col col-50">
-                                <label class="item-input">
-                                    <i class="icon ion-android-lock placeholder-icon positive"></i>
-                                    <input type="text" value="{{order.costPrice}}" ng-disabled="order.prodHidePrice">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col col-100">
-                                <label class="item-select arrow-positive">
-                                   <input type="number" name="qty" value="{{order.quantity}}">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+
+            <li class="item item-text-wrap" ng-show="orderhList.length < 1">
+                Order History not available
             </li>
-            </div>
-             
-             <li class="item item-text-wrap" ng-show="orderhList.length < 1">
-                 Orderhistry not available
-             </li>
-              
+        
 
         </div>
+        
+        
+  
+   
     </ion-content>
     <ion-content class=" has-subheader full-width byproduct" has-bouncing="true" ng-show="byproduct">
         <div class="list">
             <div class="item item-option">
+               <form ng-submit="searchOrder(searchData)" class="search-form"  novalidate >
                 <label class="item-input-wrapper">
-                <input type="search" placeholder="Search" ng-model="searchData" name="searchdata">
-            </label>
-            <button class="button button-positive"  ng-click="searchOrder(searchData)"><i class="icon ico-search"></i></button>
+                    <input type="search" placeholder="Search By Product" ng-model="searchData" name="searchdata">
+                </label>
+                <button class="button button-positive" type="submit"><i class="icon ico-search"></i></button>
+                </form>
             </div>
-            
-           
-            
-            <div class="order-wrapper" ng-repeat="order in searchorderList track by $index" ng-show="searchorderList.length > 0" >
-            <li class="item date-item" ng-if="checkDate(order.orderHistoryDate,$index)" >
-                <button class="button button-positive button-small pull-right"> <i class="ico-eye icon-big"></i></button>
-                <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
-            </li>
-            <li class="item item-text-wrap" >
-                <div class="item-wrapper">
-                    <div class="content">
+
+            <div class="order-wrapper" ng-repeat="order in searchorderList track by $index" ng-show="searchorderList.length > 0">
+                <li class="item date-item" ng-if="checkDate(order.orderHistoryDate,$index)">
+                    <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
+                    <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
+                </li>
+                <li class="item item-text-wrap">
+                    <div class="item-wrapper">
+ <div class="content">
                         <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
-                        <span class="qty positive">Qty:{{order.quantity}}</span>
-                        <p class="meta stable">Unit Price(Unit Cost): {{order.costPrice}} ({{order.operaCostPrice}}) | Stock Level: {{order.	
-prodStockQty}} | Current Price: TBC</p>
+                       
+                            <span class="qty positive">Qty : {{order.quantity}}</span>
+                           
                     </div>
-                    <div class="orderform">
-                        <div class="row">
-                            <div class="col col-50">
-                                <button class="button button-small button-outline button-positive">Re-Order Qty</button>
-                            </div>
-                            <div class="col col-50">
-                                <label class="item-input">
-                                    <i class="icon ion-android-lock placeholder-icon positive"></i>
-                                    <input type="text" value="{{order.costPrice}}" ng-disabled="order.prodHidePrice">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col col-100">
-                                <label class="item-select arrow-positive">
-                                   <input type="number" name="qty" value="{{order.quantity}}">
-                                </label>
-                            </div>
-                        </div>
                     </div>
-                </div>
-            </li>
+                </li>
             </div>
-             
-             <li class="item item-text-wrap" ng-show="searchorderList.length < 1">
-                 Orderhistry not available
-             </li>
-            
-            
-            
+
+            <li class="item item-text-wrap" ng-show="searchorderList.length < 1">
+                Order History not available
+            </li>
+
+
+
         </div>
     </ion-content>
 </ion-view>

@@ -1,17 +1,17 @@
 <ion-view view-title="Account Switching" class="accounts-page">
-   <div class="bar bar-header bar-positive" ng-if="pageName == 'accounts'">
-  <h1 class="title">Account Switching</h1>
-</div>
+    <div class="bar bar-header bar-positive" ng-if="pageName == 'accounts'">
+        <h1 class="title">Account Switching</h1>
+    </div>
     <div class="bar bar-subheader  sub-search bar-stable ">
         <div class="container item-input-inset">
-             <form ng-submit="search(accountSearch)" class="search-form"  novalidate>
-               <label class="item-input-wrapper">
-                <i class="icon ico-search placeholder-icon positive"></i>
-                <input type="search" placeholder="Search Account" ng-model="accountSearch">
-            </label>
-            <button class="button button-positive" type="submit">
-                Search
-            </button>
+            <form ng-submit="search(accountSearch)" class="search-form" novalidate ng-if="displaySearch">
+                <label class="item-input-wrapper">
+                    <i class="icon ico-search placeholder-icon positive"></i>
+                    <input type="search" placeholder="Search Account" ng-model="accountSearch">
+                </label>
+                <button class="button button-positive" type="submit">
+                    Search
+                </button>
             </form>
 
             <div class="price-toggle hide-phone">
@@ -22,34 +22,39 @@
                         <div class="handle"></div>
                     </div>
                 </label>
-
             </div>
         </div>
     </div>
-    
+
     <ion-content class=" has-subheader" has-bouncing="true">
-        <div class="card">
-          
+        <div class="card" ng-show="accountList.length">
             <div class="list">
-                <div class="list-wrapper" ng-repeat="account in accountList | orderBy:'AccountId' ">
-                <div class="item alphabet positive" ng-if="checkAlpha(account.AccountNumber)">
-                    {{account.AccountNumber}}
-                </div>
-                <div class="item" ng-click="selectAccount(account)" >
-                    <h2>({{account.AccountNumber}}) {{account.AccountCompany}} {{char}}</h2>
-                    <p ng-bind="account.BillingAddressLine1" class="stable"></p>
-                </div>    
-                </div>
-                <div class="list-wrapper" ng-show="accountList.length < 1">
-                    <div class="item">
-                    <h4>Search Result not found</h4>
+                <div class="list-wrapper" ng-repeat="account in accountList | orderBy:'AccountNumber' track by $index ">
+                    <div class="item alphabet positive" ng-if="checkAlpha(account.AccountNumber,$index)">
+                        {{account.AccountNumber[0]}}
                     </div>
-                </div>    
+                    <div class="item" ng-click="selectAccount(account)">
+                        <h2>({{account.AccountNumber}}) {{account.AccountCompany}} {{char}}</h2>
+                        <p ng-bind="account.BillingAddressLine1" class="stable"></p>
+                    </div>
                 </div>
-                
-                
             </div>
-        <!--<ion-infinite-scroll    on-infinite="loadMore()"distance="1%">  </ion-infinite-scroll>-->
         </div>
+        <div class="card" ng-show="accountList.length < 1">
+            <div class="list">
+                <div class="list-wrapper">
+                    <div class="item">
+                        <h4>Search Result not found</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card search-msg" ng-hide="accountList">
+            <div class="item item-icon-left">
+                <i class="icon ion-android-arrow-up royal slideInUp"></i> Search Accounts
+            </div>
+        </div>
+
     </ion-content>
 </ion-view>

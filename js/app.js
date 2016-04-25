@@ -12,20 +12,11 @@ var hash = bcrypt.hashSync("B4c0/\/", salt);
 
 App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 
-
-
-//var remoteDB = new PouchDB("http://serverip:5984/todos");
-
-App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
+App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen) {
 	
-	
-	
-	
-	
-    console.log($cordovaSQLite); 
     
-    $rootScope.syncObj = [{title:'Placed Order',sync:false},{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Orderhistory',sync:false}]; 
     
+    $rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
     
     if (window.localStorage.getItem("mUser") != "undefined") {
         $rootScope.mUser = JSON.parse(window.localStorage.getItem("mUser"));
@@ -33,21 +24,39 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
     if (window.localStorage.getItem("mAccount") != "undefined") {
         $rootScope.mAccount = JSON.parse(window.localStorage.getItem("mAccount"));
     }
+    
+    if (window.localStorage.getItem("syncDate") != "undefined") {
+        $rootScope.lastsyncDate = window.localStorage.getItem("syncDate");
+    }
+    
 
     $rootScope.contactData = [];
     $rootScope.accountData = [];
+   
+    $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
+	  $rootScope.loadOrders();
+      $rootScope.isOffline = $cordovaNetwork.isOffline();
+    })
+    
+     $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+		  $rootScope.isOffline = $cordovaNetwork.isOffline();
+    })
     
     
     $ionicPlatform.ready(function () {
-			console.log("this is ready");
+        //$cordovaSplashscreen.hide();
         
+        if (!window.isTablet)
+        {
+            window.plugins.orientationLock.lock("portrait")
+        }
         
 		 $rootScope.DB = $cordovaSQLite.openDB("mfc.db");
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS contacts (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, UserName TEXT, Password TEXT, CustType TEXT, CustRepTerritory TEXT, SaltUsed TEXT, RelatedAccountNumber TEXT)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX contacts_idx1 ON contacts(UserName)');
 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS products (ProdID INTEGER PRIMARY KEY AUTOINCREMENT, ProdCode TEXT, ProdParentID TEXT, ProdParentCode TEXT, ProdTitle TEXT, ProdDesc TEXT, ProdStockQty TEXT, prodHidePrice TEXT, PriceExVat TEXT, PriceIncVat TEXT, OnSale TEXT, SalePriceExVat TEXT, SalePriceIncVat TEXT, CostPrice TEXT, ProdUnitPrice TEXT, ProductCategory INTEGER, Image TEXT, relatedProductIDs TEXT)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS products (ProdID INTEGER PRIMARY KEY AUTOINCREMENT, ProdCode TEXT, ProdParentID INTEGER, ProdParentCode TEXT, ProdTitle TEXT, ProdDesc TEXT, ProdStockQty INTEGER, prodHidePrice TEXT, PriceExVat REAL, PriceIncVat REAL, OnSale TEXT, SalePriceExVat REAL, SalePriceIncVat REAL, CostPrice REAL, ProdUnitPrice REAL, ProductCategory INTEGER, Image TEXT, relatedProductIDs TEXT)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX products_idx1 ON products(ProductCategory,ProdTitle)');
 		 
@@ -57,34 +66,32 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX accounts_idx1 ON accounts(AccountCompany,AccountNumber)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice TEXT, operaCostPrice TEXT, unitCost TEXT, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice TEXT, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty TEXT, parentTitle TEXT)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX order_history_idx1 ON order_history(prodID,AccountNumber)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket (basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice TEXT, qnt INTEGER )');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal TEXT, orderDeliveryTotal TEXT, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice TEXT, prodCode TEXT, VATRate TEXT, quantity TEXT, shipped TEXT, rowTotal TEXT, rowTotalWithVAT TEXT)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice REAL, prodCode TEXT, VATRate REAL, quantity INTEGER, shipped TEXT, rowTotal REAL, rowTotalWithVAT REAL)');
+		 
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER PRIMARY KEY, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
 
-		 console.log("this is menuCtrl");
 		   if (typeof menuList == "undefined") 
 		   var menuList = [];
 			$cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM categories')
 			  .then(
 				function(result) {
-					console.log(result);
-					console.log(result.rows.length);
 					if (result.rows.length > 0) {
 					  
 					   for (var i = 0 ; i < result.rows.length;i++)
 					   {
 						   menuList.push(result.rows.item(i));
 					   }
-						console.log(menuList);
-                        $rootScope.categoryList =  angular.copy(menuList);
+		                $rootScope.categoryList =  angular.copy(menuList);
 						$rootScope.prepareMenu(menuList);
 					}
 					else
@@ -100,14 +107,10 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
 						});
 					console.log("Error on loading: " + error.message);
 				});
-		
-		
-           
+		   
         $rootScope.$emit('updateBasket');
-		
-         $rootScope.UUID = $cordovaDevice.getUUID();
         
-		
+		$rootScope.UUID = $cordovaDevice.getUUID();
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
         if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -118,7 +121,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-        
+        //console.log("hide splash");
+      $cordovaSplashscreen.hide();  
     });
     
    
@@ -138,6 +142,9 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
     if (window.localStorage.getItem("mUser") == null || window.localStorage.getItem("mUser") == "undefined") {
         mainPage = "/sync";
     }
+    
+    
+    
     
     $urlRouterProvider.otherwise(mainPage);
     
@@ -279,12 +286,22 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite) {
     
 
     .state('app.tab.orderlist', {
-        url: '/myaccount/orderlist',
+        url: '/orderlist',
          cache: false,
         views: {
             'tab-myaccount': {
                 templateUrl: 'templates/orderlist.html',
                 controller: 'orderlistCtrl'
+            }
+        }
+    })
+    
+     .state('app.tab.dateorder', {
+        url: '/orderlist/:Date',
+        views: {
+            'tab-myaccount': {
+                templateUrl: 'templates/dateorder.html',
+                controller: 'dateorderCtrl'
             }
         }
     })

@@ -1,33 +1,34 @@
 <ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="productlist-page ">
-  <ion-nav-buttons side="left" >    
-        <a class="button button-icon button-clear ion-ios-search"  href="#/app/search"></a>
+   <ion-nav-buttons side="left" >    
+        <a class="button button-icon button-clear ico-leftarrow"  ng-click="gotoSearch()"></a>
+         <button class="button button-icon button-clear ico-menu" ng-click="showMenu()"></button>
       </ion-nav-buttons>
-  
-
-
-
+      
     <div class="bar bar-subheader bar-stable">
-        <h2 class="title" > <span>{{productTitle}} ({{categoryProduct.length || 0}})</span></h2>
+        <h2 class="title pull-left" > <span>{{productTitle}} ({{categoryProduct.length || 0}})</span></h2>
         <div class="sort pull-right">
-            <!--<label class="item-select">
-                <select>
-                    <option>Blue</option>
-                    <option selected>Green</option>
-                    <option>Red</option>
+            <label class="item-select">
+                   <select ng-model="sortby" >
+                    <option value="" selected>Sort</option>
+                    <option value="ProdTitle" >Title:A-Z</option>
+                    <option value="-ProdTitle">Title:Z-A</option>
+                    <option value="PriceIncVat">Price:Low-High</option>
+                    <option value="-PriceIncVat">Price:High-Low</option>
                 </select>
-            </label>-->
+            </label>
         </div>
     </div>
 
     <ion-content class="has-subheader  full-width" has-bouncing="true">
+      
        <div class="productlist">
         <ion-list>
-           <ion-item class="item" ng-repeat="productlist in categoryProduct" ng-href="#/app/tab/product/{{productlist.ProdID}}">
+           <ion-item class="item" ng-repeat="productlist in categoryProduct | orderBy:sortby" ng-href="#/app/tab/product/{{productlist.ProdID}}">
                 <div class="container">
                     <div class="id" ng-bind="productlist.ProdID"></div>
                     <div class="title" ng-bind="productlist.ProdTitle">Lifeline Lamb and Ewe Lick 22.5 kg</div>
                     <div class="price-block">
-                        <div class="errmsg assertive" ng-if="!productlist.PriceExVat && !productlist.PriceIncVat "> price is unavailable</div>
+                        <div class="errmsg assertive" ng-if="!productlist.PriceIncVat"> price is unavailable</div>
                           <div class="price" ng-if="productlist.PriceExVat"><span class="positive" ng-bind="productlist.PriceExVat | currency:'£'"></span><em> ex VAT</em></div>
                         <div class="price" ng-if="productlist.PriceIncVat"><span class="positive"  ng-bind="productlist.PriceIncVat | currency:'£'"></span><em> inc VAT</em></div>
                     </div>

@@ -1,14 +1,14 @@
 <ion-view view-title="Search Product" class="accounts-page">
     <div class="bar bar-subheader  sub-search bar-stable ">
         <div class="container item-input-inset">
-           <form ng-submit="searchProduct(productSearch)" class="search-form"  novalidate>
-            <label class="item-input-wrapper">
-                <i class="icon ico-search placeholder-icon positive"></i>
-                <input type="search" placeholder="Search Product" ng-model="productSearch">
-            </label>
-            <button class="button button-positive" type="submit">
-                Search
-            </button>
+            <form ng-submit="searchProduct(productSearch)" class="search-form" novalidate>
+                <label class="item-input-wrapper">
+                    <i class="icon ico-search placeholder-icon positive"></i>
+                    <input type="search" placeholder="Search Product" ng-model="productSearch">
+                </label>
+                <button class="button button-positive" type="submit">
+                    Search
+                </button>
             </form>
             <div class="price-toggle hide-phone">
                 <p>Show Rep Price? </p>
@@ -22,9 +22,17 @@
             </div>
         </div>
     </div>
-    <ion-content class=" has-subheader" has-bouncing="true">
-          <div class="productlist">
-        <ion-list>
+    <ion-content class=" has-subheader" has-bouncing="true" ng-init="t='0';">
+
+
+        <!--Test Area-->
+
+
+        <!--END-->
+
+
+        <div class="productlist">
+            <ion-list>
                 <ion-item class="item" ng-repeat="productlist in searchproductList" ng-href="#/app/tab/product/{{productlist.ProdID}}">
                     <div class="container">
                         <div class="id" ng-bind="productlist.ProdID"></div>
@@ -39,8 +47,13 @@
                 <ion-item class="item" ng-show="searchproductList.length < 1">
                     <h4>Search Result not found</h4>
                 </ion-item>
-              </ion-list>
-            <!--<ion-infinite-scroll    on-infinite="loadMore()"distance="1%">  </ion-infinite-scroll>-->
+            </ion-list>
+
+            <div class="card search-msg" ng-hide="searchproductList">
+                <div class="item item-icon-left">
+                    <i class="icon ion-android-arrow-up royal slideInUp"></i> Search Products
+                </div>
+            </div>
         </div>
     </ion-content>
 </ion-view>

@@ -1,0 +1,43 @@
+<ion-view view-title="({{mAccount.AccountNumber}}) {{mAccount.AccountCompany}}" class="order-page dateorder-page">
+    <div class="bar bar-subheader bar-stable">
+        <h2 class="title">{{BeautifyDate}}</h2>
+    </div>
+    <ion-content class=" has-subheader full-width" has-bouncing="true">
+        <div class="list" >
+            <li class="item item-text-wrap" ng-repeat="order in dateorderList track by $index" ng-init="orderQty[$index] = 0" >
+                <div class="item-wrapper" ng-init="showContent[$index] = false">
+                        <div class="content">
+                         <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
+                       
+                        <div class="qty-block"><span class="qty positive">Qty : {{order.quantity}}</span> <a class="button button-small button-positive pull-right hide-tab" href="javascript:void(0)" ng-click="showContent[$index] = !showContent[$index]"><span ng-show="showContent[$index]">Less -</span><span ng-show="!showContent[$index]">More +</span></a></div>
+                    <p class="meta stable" ng-show="showContent[$index]" ><span>Unit Price(Unit Cost): {{order.costPrice}} ({{order.operaCostPrice}})</span> <em>|</em><span> Stock Level: {{order.	
+prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
+              
+                <div class="orderform">
+                    <div class="row">
+                        <div class="col col-50">
+                            <button class="button button-small button-outline button-positive" ng-click="orderQty[$index] = order.quantity">Re-Order Qty</button>    
+                        </div>
+                        <div class="col col-50">
+                            <label class="item-input" ng-class="{'input-enabled':!canChangePrice}">
+                                <i class="icon placeholder-icon positive" ng-class="{'ion-android-lock':canChangePrice,'ion-android-unlock':!canChangePrice}"></i>
+                                <input type="text" value="{{order.costPrice}}" ng-disabled="canChangePrice">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-100">
+                            <label class="item-select arrow-positive">
+                                <input type="number" name="qty" value="1" placeholder="Quantity" ng-model="orderQty[$index]">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                  </div>
+            </li>
+        </div>
+          <div class="fullbutton">
+          <a ng-click="allordertoBasket()" class="button button-positive" > Add Re-Orders to Basket</a>
+        </div>
+    </ion-content>
+</ion-view>

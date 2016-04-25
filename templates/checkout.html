@@ -14,22 +14,22 @@
   <div class="col col-50 products">
        <h4 class="positive">Your Purchases :</h4>
         <div class="row" ng-repeat="product in basketList track by $index">
-            <div class="col col-50 title">{{product.ProdTitle}}</div>
-            <div class="col col-50 price">{{(priceData[$index].uprice * priceData[$index].qty) | currency : '£'}}</div>
+            <div class="col col-50 title"><span>{{priceData[$index].qty}}X</span> <span ng-bind="product.ProdTitle"></span></div>
+            <div class="col col-50 price"><span ng-show="priceData[$index].tbc">TBC</span><span ng-show="!priceData[$index].tbc" ng-bind="(priceData[$index].uprice * priceData[$index].qty) | currency : '£'"></span></div>
        </div> 
         
         <br>
       <div class="row">
             <div class="col col-50 title">Delivery<small>(ex VAT)</small></div>
-            <div class="col col-50 price">£0</div>
+            <div class="col col-50 price">{{totalPrice | currency : '£'}}</div>
       </div>
       <div class="row">
             <div class="col col-50 title">Sub Total<small>(ex VAT)</small></div>
-            <div class="col col-50 price"></div>
+            <div class="col col-50 price">{{totalPrice + totalVat | currency : '£'}}</div>
       </div>
       <div class="row">
             <div class="col col-50 title">VAT Total</div>
-            <div class="col col-50 price"></div>
+            <div class="col col-50 price">{{totalVat | currency : '£'}}</div>
       </div>
       
   </div>
