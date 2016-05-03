@@ -34,9 +34,15 @@
                     </div>
 
                     <div class="product-meta">
-                        <span class="code" ng-bind="product.ProdCode"></span>|<span class="stock balanced" ng-if="product.ProdStockQty">In Stock</span><span class="stock assertive" ng-if="!product.ProdStockQty">Out of Stock</span>
+                        <div class="row">
+                            <div class="col col-50">Product Code :</div>
+                            <div class="col col-50"> <span class="code" ng-bind="product.ProdCode"></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col col-50">Availability :</div>
+                            <div class="col col-50"><span class="stock balanced" ng-if="product.ProdStockQty">In Stock</span><span class="stock assertive" ng-if="!product.ProdStockQty">Out of Stock</span></div>
+                        </div>
                     </div>
-
                     <div class="product-detail" ng-bind-html="product.ProdDesc || ParentProduct.ProdDesc">
                     </div>
                 </div>
@@ -44,49 +50,49 @@
                     <div class="product-form">
                         <ul class="list">
                             <li class="item" ng-if="ConfigurableProduct.length > 0">
-								<label class="item-select arrow-positive">
-									<select ng-model="CurrentConfigurable" ng-options="item.ProdTitle for item in ConfigurableProduct track by item.ProdID" ng-change="swichProduct(CurrentConfigurable.ProdID)">
-									<option value="">Please Select</option>
-									</select>
-								</label>
-							</li>	
-							<li class="item">
                                 <label class="item-select arrow-positive">
-                                    <input type="number" name="qty" min="1" max="product.ProdStockQty" placeholder="Quantity" value="1" ng-model="data.Qty">
+                                    <select ng-model="CurrentConfigurable" ng-options="item.ProdTitle for item in ConfigurableProduct track by item.ProdID" ng-change="swichProduct(CurrentConfigurable.ProdID)">
+                                        <option value="">Please Select</option>
+                                    </select>
                                 </label>
                             </li>
                             <li class="item">
-                                <button class="button button-small  button-positive" ng-disabled="!product.ProdStockQty" ng-click="addtoBasket(product.ProdID,product.ProdTitle,product.ProdUnitPrice,data.Qty,product.PriceExVat,product.PriceIncVat)">
+                                <label class="item-select arrow-positive">
+                                   <select ng-model="data.Qty" ng-options="n for n in [] | range:1:product.ProdStockQty" ng-disabled="!product.ProdStockQty"></select>
+                                  
+                                </label>
+                            </li>
+                            <li class="item">
+                                <button class="button button-small  button-positive" ng-disabled="!product.ProdStockQty" ng-click="addtoBasket(product.ProdID,product.ProdTitle,product.ProdUnitPrice,data.Qty,product.ProdStockQty,product.PriceExVat,product.PriceIncVat)">
                                     Add to Basket
                                 </button>
                             </li>
                         </ul>
-
-
                     </div>
                 </div>
             </div>
         </div>
-		<div class="productlist">
-        <ion-list>
-		<ion-item class="item">
-                <strong>Related Products</strong>
-            </ion-item>
-           <ion-item class="item" ng-repeat="productlist in relatedProduct | orderBy:ProdTitle" ng-href="#/app/tab/product/{{productlist.ProdID}}">
-                <div class="container">
-                    <div class="id" ng-bind="productlist.ProdID"></div>
-                    <div class="title" ng-bind="productlist.ProdTitle">Lifeline Lamb and Ewe Lick 22.5 kg</div>
-                    <div class="price-block">
-                        <div class="errmsg assertive" ng-if="!productlist.PriceIncVat"> price is unavailable</div>
-                          <div class="price" ng-if="productlist.PriceExVat"><span class="positive" ng-bind="productlist.PriceExVat | currency:'£'"></span><em> ex VAT</em></div>
-                        <div class="price" ng-if="productlist.PriceIncVat"><span class="positive"  ng-bind="productlist.PriceIncVat | currency:'£'"></span><em> inc VAT</em></div>
+        <div class="productlist">
+            <ion-list>
+                <ion-item class="item">
+                    <strong>Related Products</strong>
+                </ion-item>
+                <ion-item class="item" ng-repeat="productlist in relatedProduct | orderBy:ProdTitle" ng-href="#/app/tab/product/{{productlist.ProdID}}">
+                    <div class="container">
+                        <div class="id" ng-bind="productlist.ProdID"></div>
+                        <div class="title" ng-bind="productlist.ProdTitle">Lifeline Lamb and Ewe Lick 22.5 kg</div>
+                        <div class="price-block">
+                            <div class="errmsg assertive" ng-if="!productlist.PriceIncVat"> price is unavailable</div>
+                            <div class="price" ng-if="productlist.PriceExVat"><span class="positive" ng-bind="productlist.PriceExVat | currency:'£'"></span><em> ex VAT</em></div>
+                            <div class="price" ng-if="productlist.PriceIncVat"><span class="positive" ng-bind="productlist.PriceIncVat | currency:'£'"></span><em> inc VAT</em></div>
+                        </div>
                     </div>
-                </div>
-             </ion-item>
-             <ion-item ng-if="relatedProduct.length < 1" class="nodata">
-                 <div class="container"> <h3>No Related product available</h3></div>
-             </ion-item>
-           </ion-list>
+                </ion-item>
+                <ion-item ng-if="relatedProduct.length < 1" class="nodata">
+                    <div class="container">
+                        <h3>No Related product available</h3></div>
+                </ion-item>
+            </ion-list>
         </div>
     </ion-content>
 </ion-view>

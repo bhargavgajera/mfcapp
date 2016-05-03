@@ -19,18 +19,25 @@
        </div> 
         
         <br>
-      <div class="row">
-            <div class="col col-50 title">Delivery<small>(ex VAT)</small></div>
+        
+        <div class="row">
+            <div class="col col-50 title">Total<small>(ex VAT)</small></div>
             <div class="col col-50 price">{{totalPrice | currency : '£'}}</div>
-      </div>
-      <div class="row">
-            <div class="col col-50 title">Sub Total<small>(ex VAT)</small></div>
-            <div class="col col-50 price">{{totalPrice + totalVat | currency : '£'}}</div>
       </div>
       <div class="row">
             <div class="col col-50 title">VAT Total</div>
             <div class="col col-50 price">{{totalVat | currency : '£'}}</div>
       </div>
+      <div class="row">
+            <div class="col col-50 title">Delivery<small>(ex VAT)</small></div>
+            <div class="col col-50 price">Free</div>
+      </div>
+      
+      <div class="row">
+            <div class="col col-50 title">Sub Total<small>(inc VAT)</small></div>
+            <div class="col col-50 price">{{totalPrice + totalVat | currency : '£'}}</div>
+      </div>
+      
       
   </div>
   <div class="col col-50 address">

@@ -358,6 +358,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 .popup-container .popup-title { color: #886aea;}
 .popup-error .popup-title { color: #CC3333;}
 .popup-container .popup-head { border-bottom: solid 1px #ddd; }
+.search-msg .item-icon-left { padding-left: 40px !important;}
 
  
 
@@ -371,6 +372,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 .product-meta span{ padding: 0 10px;}
 .product-meta span:first-child { padding-left: 0px;}
 .product-meta span:last-child { padding-right: 0px;}
+
 .product-form { background: #F1F0F0; padding: 10px 20px;}
 .product-form .item{ background: none; border:none; padding:6px 0; }
 .product-form .item-select { width: 100%;}
@@ -378,10 +380,12 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
  .custom-icon.spinner {  fill: #fff;stroke: #fff;}
 
 
+
+
 .sync-popup .item { background: none; color: #fff; border: none; border-radius: 6px;}
 .nopriceCard { max-width: 768px; margin: 20px auto !important; border: none; box-shadow: none; background: #cc3333;font-family: 'robotoregular'; }
 .nopriceCard .item { background: none; color: #fff; text-transform: uppercase;}
-.fullbutton { display: block; padding: 20px; width: 100%; overflow: hidden;}
+.fullbutton { display: block; padding: 20px; width: 100%; overflow: hidden; clear: both;}
 .fullbutton .button { display: block; max-width: 400px; width: 100%;}
 
 
@@ -473,10 +477,12 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .product-page .bar-subheader .title{ display: none;}
     .product-page .sort { display: none;}
     
+    .product-meta .row{display: -webkit-box;display: -webkit-flex; display: -moz-box;display: -moz-flex;display: -ms-flexbox;display: flex; padding:5px 0;}
+    .product-meta .row .col:first-child { padding-left: 0px;}
+    .product-meta .row .col:last-child { padding-right: 0px;}
+    
     .order-page  .item-input-wrapper { background: #fff; border:solid 1px #ccc; width: 220px; display: inline-block;}
     .order-page .item-option .button .icon { line-height: 32px;}
-   
-    
 }
 
 

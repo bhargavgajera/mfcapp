@@ -67,11 +67,13 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX accounts_idx1 ON accounts(AccountCompany,AccountNumber)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER)');
+        
+         $cordovaSQLite.execute($rootScope.DB,'ALTER TABLE order_history ADD COLUMN orderHistoryNumericDate INTEGER');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX order_history_idx1 ON order_history(prodID,AccountNumber)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0)');
-		 
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER,stokQnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0)');
+        
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
@@ -139,12 +141,11 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 
     
     var mainPage = "/app/tab/accounts";
-    if (window.localStorage.getItem("mUser") == null || window.localStorage.getItem("mUser") == "undefined") {
+    if (window.localStorage.getItem("syncDate") == null || window.localStorage.getItem("syncDate") == "undefined") {
         mainPage = "/sync";
+    } else if (window.localStorage.getItem("mUser") == null || window.localStorage.getItem("mUser") == "undefined"){
+         mainPage = "/login";
     }
-    
-    
-    
     
     $urlRouterProvider.otherwise(mainPage);
     
@@ -157,6 +158,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
     
     .state('login', {
             url: '/login',
+            cache: false, 
             templateUrl: 'templates/login.html',
             controller: 'loginCtrl'
         })
@@ -321,5 +323,39 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 });
 
 
+App.filter('range', function() {
+  return function(input, min, max) {
+    min = parseInt(min);
+    max = parseInt(max);
+    for (var i=min; i<=max; i++)
+      input.push(i);
+    return input;
+  };
+});
 
 
+App.filter('filterbymonth', function() {
+  return function(items,lastmonth) {
+     
+	  if (lastmonth == 'all')
+	  {
+		  return items;
+	  }else
+	  {
+        var filtered = [];
+		var cDate = new Date();
+		var cmonth = cDate.getMonth();
+		var pastmonth = cmonth - lastmonth;
+		var pDate = cDate.setMonth(pastmonth);
+	
+		angular.forEach(items, function(item) {
+            console.log(item);
+			var jsdate = new Date(item.orderHistoryDate).getTime();
+		  if(jsdate > pDate) {
+			filtered.push(item);
+		  }
+		});
+		return filtered;
+	  }
+  };
+});

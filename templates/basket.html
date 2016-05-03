@@ -3,7 +3,7 @@
         <h2 class="title">Basket</h2>
     </div>
 
-    <ion-content class="has-subheader has-footer full-width" has-bouncing="true">
+    <ion-content class="has-subheader  full-width" has-bouncing="true">
         <div class="table-wrapper">
             <table>
                 <tr>
@@ -22,7 +22,8 @@
                     </td>
                     <td valign="top" class="qty" ng-init="priceData[$index].tbc = product.isTBC">
                         <label class="item-select arrow-positive">
-                            <input type="number" name="qty" ng-model="priceData[$index].qty" placeholder="Quantity" ng-blur="updateQty(product.basketID,priceData[$index].qty)">
+    <select ng-model="priceData[$index].qty" ng-options="n for n in [] | range:1:product.stokQnt" ng-change="updateQty(product.basketID,priceData[$index].qty)"></select>                            
+<!--<input type="number" name="qty" ng-model="priceData[$index].qty" placeholder="Quantity" ng-blur="updateQty(product.basketID,priceData[$index].qty)">-->
                         </label>
                     </td>
                     <td valign="top" class="delete hide-phone">

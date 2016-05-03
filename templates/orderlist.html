@@ -13,15 +13,16 @@
                     <div class="input-label">
                         Orders placed in
                     </div>
-                    <select>
-                        <option>All </option>
-                        <option>Green</option>
-                        <option>Red</option>
+                    <select ng-model="monthfilter" ng-change="filterbyMonth(monthfilter)">
+                        <option value="72">All</option>
+                        <option value="1">Last 30 days</option>
+                        <option value="3">Last 3 months</option>
+                        <option value="6">Last 6 months</option>
                     </select>
                 </label>
             </div>
-            
-            <li class="item date-item" ng-repeat="order in orderhList  | orderBy:'orderHistoryDate':true track by $index" ng-if="checkDate(order.orderHistoryDate,$index)" ng-show="orderhList.length > 0">
+
+            <li class="item date-item" ng-repeat="order in orderhList  | orderBy:'orderHistoryDate':true track by $index " ng-if="checkDate(order.orderHistoryDate,$index)" ng-show="orderhList.length > 0">
                 <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
                 <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
             </li>
@@ -30,22 +31,22 @@
             <li class="item item-text-wrap" ng-show="orderhList.length < 1">
                 Order History not available
             </li>
-        
+
 
         </div>
-        
-        
-  
-   
+
+
+
+
     </ion-content>
     <ion-content class=" has-subheader full-width byproduct" has-bouncing="true" ng-show="byproduct">
         <div class="list">
             <div class="item item-option">
-               <form ng-submit="searchOrder(searchData)" class="search-form"  novalidate >
-                <label class="item-input-wrapper">
-                    <input type="search" placeholder="Search By Product" ng-model="searchData" name="searchdata">
-                </label>
-                <button class="button button-positive" type="submit"><i class="icon ico-search"></i></button>
+                <form ng-submit="searchOrder(searchData)" class="search-form" novalidate>
+                    <label class="item-input-wrapper">
+                        <input type="search" placeholder="Search By Product" ng-model="searchData" name="searchdata" ng-disabled="orderhList.length < 1">
+                    </label>
+                    <button class="button button-positive" type="submit"><i class="icon ico-search" ng-disabled="orderhList.length < 1"></i></button>
                 </form>
             </div>
 
@@ -56,22 +57,23 @@
                 </li>
                 <li class="item item-text-wrap">
                     <div class="item-wrapper">
- <div class="content">
-                        <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
-                       
+                        <div class="content">
+                            <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
                             <span class="qty positive">Qty : {{order.quantity}}</span>
-                           
-                    </div>
+                        </div>
                     </div>
                 </li>
             </div>
 
             <li class="item item-text-wrap" ng-show="searchorderList.length < 1">
-                Order History not available
+                Order history not available
             </li>
 
-
-
+            <div class="card search-msg" ng-hide="searchorderList || orderhList.length < 1">
+                <div class="item item-icon-left">
+                    <i class="icon ion-android-arrow-up royal slideInUp"></i> Search order history
+                </div>
+            </div>
         </div>
     </ion-content>
 </ion-view>

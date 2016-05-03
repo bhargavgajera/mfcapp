@@ -1,49 +1,64 @@
+<ion-side-menus enable-menu-with-back-views="false">
+    <ion-side-menu-content>
 
-
-<div class="navigation" ng-class="{'open-child':openChild,'open-sub':openSub}">
-
-
-    <script type="text/ng-template" id="categoryTree">
-        <a class="item  item-icon-right " ng-class="{'item-icon-left ':category.color}" ng-if="category.sub" href="javascript:void(0)" ng-click="checkMenu(category,mainCat)" ><i class="icon ico-{{category.color}} "></i>{{category.catTitle}}
+        <div class="navigation" ng-class="{'open-child':openChild,'open-sub':openSub}">
+            <script type="text/ng-template" id="categoryTree">
+                <a class="item  item-icon-right " ng-class="{'item-icon-left ':category.color}" ng-if="category.sub" href="javascript:void(0)" ng-click="checkMenu(category,mainCat)"><i class="icon ico-{{category.color}} "></i>{{category.catTitle}}
             <i class="icon ico-rightarrow"></i></a>
-        <a class=" item  bg-{{category.color}}" ng-class="{'item-icon-left ':category.color}" ng-if="!category.sub"
-           ng-href="#/app/tab/productlist/{{category.catID}}" ng-click="showCat(category)"><i class="icon ico-{{category.color}} "></i>{{category.catTitle}} </a>
+                <a class=" item  bg-{{category.color}}" ng-class="{'item-icon-left ':category.color}" ng-if="!category.sub" ng-href="#/app/tab/productlist/{{category.catID}}" ng-click="showCat(category)"><i class="icon ico-{{category.color}} "></i>{{category.catTitle}} </a>
 
 
-        <div class="mp-level submenu" ng-if="category.sub" ng-class="{'level-open':category.isOpen && openMenu }" ng-init="mainCat = false;">
-            <div class="bar bar-header bar-positive">
-                <a class="button icon-left ico-leftarrow button-clear" ng-click="category.isOpen = false"><span
+                <div class="mp-level submenu" ng-if="category.sub" ng-class="{'level-open':category.isOpen && openMenu }" ng-init="mainCat = false;">
+                    <div class="bar bar-header bar-positive">
+                        <a class="button icon-left ico-leftarrow button-clear" ng-click="category.isOpen = false"><span
                         ng-bind="category.catTitle"></span></a>
+                    </div>
+                    <ul class="list">
+                        <li class="bg-{{category.color}}" ng-repeat="category in category.sub" ng-include="'categoryTree'"></li>
+                    </ul>
+                </div>
+            </script>
+            <div class="mainmenu mp-level " ng-class="{'level-open':openMenu}">
+                <div class="bar bar-header bar-positive">
+                    <a class="button icon-left ico-close button-clear " ng-click="hideMenu()"></a>
+                    <h1 class="title">Murray Group</h1></div>
+                <ul class="list main-item">
+                    <li class="bg-{{category.color}}" ng-repeat="category in menuList track by $index" ng-init="mainCat= true" ng-include="'categoryTree'"></li>
+                </ul>
             </div>
-            <ul class="list">
-                <li class="bg-{{category.color}}" ng-repeat="category in category.sub" ng-include="'categoryTree'"></li>
-            </ul>
         </div>
-    </script>
-    <div class="mainmenu mp-level " ng-class="{'level-open':openMenu}">
-        <div class="bar bar-header bar-positive"><a class="button icon-left ico-close button-clear " ng-click="hideMenu()"></a>
-            <h1 class="title">Murray Group</h1></div>
-        <ul class="list main-item">
-            <li class="bg-{{category.color}}" ng-repeat="category in menuList track by $index" ng-init="mainCat= true" ng-include="'categoryTree'"></li>
-        </ul>
-    </div>
-</div>
 
-<ion-nav-bar class="bar-positive nav-title-slide-ios7">
-    <ion-nav-back-button class="button-clear" ng-class="{'hide':isbackMenu}"><i class="icon ico-leftarrow"></i>
-    </ion-nav-back-button>
+        <ion-nav-bar class="bar-positive nav-title-slide-ios7">
+            <ion-nav-back-button class="button-clear" ng-class="{'hide':isbackMenu}"><i class="icon ico-leftarrow"></i>
+            </ion-nav-back-button>
 
-    <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ico-menu" ng-click="showMenu()">
-        </button>
-    </ion-nav-buttons>
+            <ion-nav-buttons side="left">
+                <button class="button button-icon button-clear ico-menu" ng-click="showMenu()">
+                </button>
+            </ion-nav-buttons>
 
-    <ion-nav-buttons side="right">
-       <p ng-if="lastsyncDate" class="hide-phone ">Last Sync - {{lastsyncDate |  date : 'HH:mm dd-MM-yyyy '}}</p>
-        <button class="button button-icon button-clear ico-sync" ng-click="syncData()">
-        </button>
-        <button class="button button-icon button-clear ico-option" ng-click="showRightMenu()">
-        </button>
-    </ion-nav-buttons>
-</ion-nav-bar>
-<ion-nav-view name="appContent"></ion-nav-view>
+            <ion-nav-buttons side="right">
+                <p ng-if="lastsyncDate" class="hide-phone ">Last Sync - {{lastsyncDate | date : 'HH:mm dd-MM-yyyy '}}</p>
+                <button class="button button-icon button-clear  ion-android-sync " ng-click="syncData()">
+                </button>
+                <button class="button button-icon button-clear ico-option" menu-toggle="right"></button>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <ion-nav-view name="appContent"></ion-nav-view>
+    </ion-side-menu-content>
+
+    <!-- Side Menu (left) -->
+    <ion-side-menu side="right">
+        <ion-header-bar class="bar-positive">
+            <h1 class="title">Quick Menu</h1>
+        </ion-header-bar>
+        <ion-content>
+            <ion-list>
+                <ion-item menu-close href="#/app/tab/search" class="item-icon-left">
+                    <i class="icon ico-search  "></i> Search Product</ion-item>
+                <ion-item menu-close class="item-icon-left" ng-click="logout()" >
+                    <i class="icon ion-log-out  "></i> Logout </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-side-menu>
+</ion-side-menus>

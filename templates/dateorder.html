@@ -28,7 +28,8 @@ prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
                     <div class="row">
                         <div class="col col-100">
                             <label class="item-select arrow-positive">
-                                <input type="number" name="qty" value="1" placeholder="Quantity" ng-model="orderQty[$index]">
+                               <select ng-model="orderQty[$index]" ng-options="n for n in [] | range:1:order.prodStockQty"></select>
+                                <!--<input type="number" name="qty" value="1" placeholder="Quantity" ng-model="orderQty[$index]">-->
                             </label>
                         </div>
                     </div>

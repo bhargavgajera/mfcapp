@@ -9,8 +9,7 @@
         <div class="sort pull-right">
             <label class="item-select">
                    <select ng-model="sortby" >
-                    <option value="" selected>Sort</option>
-                    <option value="ProdTitle" >Title:A-Z</option>
+                    <option value="ProdTitle"  selected>Title:A-Z</option>
                     <option value="-ProdTitle">Title:Z-A</option>
                     <option value="PriceIncVat">Price:Low-High</option>
                     <option value="-PriceIncVat">Price:High-Low</option>
@@ -23,6 +22,14 @@
       
        <div class="productlist">
         <ion-list>
+          <ion-item class="item" >
+                <div class="container">
+                    <div class="id"><strong>ID</strong></div>
+                    <div class="title" ><strong>Name</strong></div>
+                    <div class="price-block"><strong>Price</strong></div>
+                </div>
+             </ion-item>
+          
            <ion-item class="item" ng-repeat="productlist in categoryProduct | orderBy:sortby" ng-href="#/app/tab/product/{{productlist.ProdID}}">
                 <div class="container">
                     <div class="id" ng-bind="productlist.ProdID"></div>
