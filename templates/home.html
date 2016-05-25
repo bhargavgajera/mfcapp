@@ -39,8 +39,7 @@
 
             <ion-nav-buttons side="right">
                 <p ng-if="lastsyncDate" class="hide-phone ">Last Sync - {{lastsyncDate | date : 'HH:mm dd-MM-yyyy '}}</p>
-                <button class="button button-icon button-clear  ion-android-sync " ng-click="syncData()">
-                </button>
+                <button class="button button-sync" ng-class="{'button-light':!checkDate(),'button-assertive':checkDate()}" ng-click="syncData()"> Sync</button>
                 <button class="button button-icon button-clear ico-option" menu-toggle="right"></button>
             </ion-nav-buttons>
         </ion-nav-bar>

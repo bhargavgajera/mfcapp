@@ -193,6 +193,7 @@ input, button, select, textarea {font-family: 'robotoregular'; }
 .mp-level.level-open  {-webkit-transform: translateX(0px);-ms-transform: translateX(0px);transform: translateX(0px);}
 .mp-level .bar-header { position: static;}
 .bar.bar-header .button{ padding: 0px;}
+.bar.bar-header .button.button-sync { padding: 0 10px;}
 .bar.bar-header .button span{font-family: 'robotobold';}
 .bar.bar-header .button:after { display: none;}
 
@@ -278,6 +279,7 @@ input, button, select, textarea {font-family: 'robotoregular'; }
 
 .item-select { display: inline-block;}
 .item-select select{ position: static;height: 34px; vertical-align: middle; display: inline-block; max-width: none;background: none;}
+.item-select select[disabled] { background: #CCCCCC;}
 .item-select.arrow-positive { background: #fff;}
 .item-select.arrow-positive input,.item-select.arrow-positive select {border:solid 1px #ccc; border-radius: 4px;text-align: left; width: 100%;}
 .item-select.arrow-positive .input-label + select { width: auto;}

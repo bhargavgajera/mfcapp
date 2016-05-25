@@ -13,10 +13,10 @@ var hash = bcrypt.hashSync("B4c0/\/", salt);
 App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 
 App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen) {
-	
     
-    
-    $rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
+     //$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
+     $rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false}]; 
+     $rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Orderhistory',sync:false}]; 
     
     if (window.localStorage.getItem("mUser") != "undefined") {
         $rootScope.mUser = JSON.parse(window.localStorage.getItem("mUser"));
@@ -52,7 +52,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
         }
         
 		  $rootScope.DB = $cordovaSQLite.openDB({name: 'mfc.db', location: 'default'});
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS contacts (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, UserName TEXT, Password TEXT, CustType TEXT, CustRepTerritory TEXT, SaltUsed TEXT, RelatedAccountNumber TEXT)');
+        
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS contacts (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, UserName TEXT, Password TEXT, CustType TEXT, CustRepTerritory TEXT, SaltUsed TEXT, RelatedAccountNumber TEXT)');        
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX contacts_idx1 ON contacts(UserName)');
 
@@ -81,6 +82,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice REAL, prodCode TEXT, VATRate REAL, quantity INTEGER, shipped TEXT, rowTotal REAL, rowTotalWithVAT REAL)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER PRIMARY KEY, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
+
+         $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS syncLog(ID INTEGER PRIMARY KEY AUTOINCREMENT, apiName TEXT, insertedDate TEXT, insertedLog TEXT, acType INTEGER, acId INTEGER)');
 
 		   if (typeof menuList == "undefined") 
 		   var menuList = [];
@@ -155,7 +158,11 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
             templateUrl: 'templates/sync.html',
             controller: 'syncCtrl'
         })
-    
+       .state('syncuserdata', {
+            url: '/syncuserdata',
+            templateUrl: 'templates/syncuserdata.html',
+            controller: 'syncUserCtrl'
+        })    
     .state('login', {
             url: '/login',
             cache: false, 
@@ -289,7 +296,6 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 
     .state('app.tab.orderlist', {
         url: '/orderlist',
-         cache: false,
         views: {
             'tab-myaccount': {
                 templateUrl: 'templates/orderlist.html',

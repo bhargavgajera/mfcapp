@@ -21,7 +21,7 @@ angular.module('starter.controllers', [])
         $rootScope.lastsyncDate;
         $scope.innerSync = false;
         $rootScope.headers = {headers:{
-            'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer 2WsLcqqcjxJ6HYk5RwJkSYm9KICe1gF_HLVS1BFUnBGXwyCCSTnQLaRaCgrGnez3K6YbEu_XZuimbG3U5JnTJktOumcm5sGk_2BeChMKYtOBM-XMCyiHLGx-TXSgsW6-18g-pH2vi_uX1SrLTkIPBZ4M5qSbwaXm8iKSX_gUgHikVX7XFKeuCfLz2gXhNx2StudtagaHXiKPouWaHVkfRcHm1QV_NowbPuBsn7X4Ns3oGhl-tlnV1CsrwUAMZRxr3-itz4oVbWz3WHlShOvlB4ZwZSp3X8rMLZ5qCD5NmCDpl6lOY94KBsU3d-rpiJrcciEwmOP-SpMQ6RSZr2yIQ1_7HJ6vCfBm9rbNulNqD6KSD1YZjAFdkMz29q1exGeVpSmnH_GCXSGrThkVWCV2FivBmXrI-Ot_kJY0L7yQT86rxXp0OKpbDRNFXyR7WNBU75QVLkR70se9fHmTn0WNZxiU8fpDc-E1pj9p-W8WXtE'}}
+            'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer A4wfcFCoJrHJtGrfqGDiiPtzvWIMv4rqpp58cGlXbFx7qSxRF4q2CWvwXnkvLw1eqcRl4LlpKCRYS7AOeyqvCCv6aVTuJ2mlom6JBu-mvJt5KgSwvhERfXsBLDQYlm-785yQS9y63hRe3-075opdRT8dYNru0jeujuup-lqlX7minDxp1db_mw24nyS5EyTfU76sElyzM6IWfthnZvk3hfYusev1IzU0k_iCmADdbSrWz52Jz3aj9Xc3RAgeE_F-EN5OBeJN4BdxVLEUwi2_kvsgYk8VtpcCrX7L_6NQc7nGXOxt0ivc_m52XylU6ru6PcZsu5g3jolM5nipcU1Jfqjm-NV4j-rcvwQ8kvhsVpukwM-Zgo9G-vt2Khal_ieEulsEHttGk5dgd-2WCrAEHAO7t0LPWb2JGlrokcIaH3_HWdcPnmFtsjttlg_FgB3QyhqeLfLWypFnSyIyiZyzlHETWfNsKh1NKc9bI5ydZi4'}}
 
         $rootScope.menuColor = ['farm', 'horse', 'dog', 'hygin'];
 
@@ -485,8 +485,6 @@ angular.module('starter.controllers', [])
                                 $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Relatedproducts"),"Relatedproducts","'+currentDate+'","'+curTimeLog+'",0,0)');
                                 //$scope.loadOrderhistory();
                                 $rootScope.syncObj[3].sync = 'done';
-                                var sDate = new Date().getTime();
-                                window.localStorage.setItem("syncDate",sDate);
                                 $ionicLoading.hide();
 
                             },
@@ -900,21 +898,54 @@ angular.module('starter.controllers', [])
             .then(
                 function (result) {
                     if (result.rows.length > 0) {
-                            /*var User = result.rows.item(0);
-                            $ionicHistory.clearHistory();
+                        var User = result.rows.item(0);
+                        $ionicHistory.clearHistory();
                             $ionicHistory.clearCache();
                             $rootScope.mUser = User;
                             window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
                             window.localStorage.removeItem("mAccount");
-                            $rootScope.mAccount = "";*/
+                            $rootScope.mAccount = "";
 
-                        
-                        //var hash = bcrypt.hashSync(Password, User.SaltUsed);
-                        //if (hash == User.Password) {
-                        
-                        var User = result.rows.item(0);
-                        if (bcrypt.compareSync(Password, User.Password))
-                        {
+
+
+                           
+                            var UserId = $rootScope.mUser.Id;
+                          
+
+                            $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
+                                .then(function (result) {
+                                    if(result.rows.length > 0){
+                                        for(var pt=0;pt<result.rows.length;pt++){
+                                            if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 10){
+                                                $state.go('syncuserdata', {
+                                                        location: false
+                                                    });
+                                            }else
+                                            {
+                                                 $state.go('app.tab.accounts', {
+                                                        location: false
+
+                                                 });
+                                            }
+                                        }
+                                    }else{
+                                        
+                                        $state.go('syncuserdata', {
+                                            location: false
+                                        });
+                                       
+                                    }
+                                    
+                            });
+
+                           
+
+
+                            
+
+                        /*var User = result.rows.item(0);
+                        var hash = bcrypt.hashSync(Password, User.SaltUsed);
+                        if (hash == User.Password) {
                             $ionicLoading.hide();
                             $cordovaKeyboard.close();
 
@@ -924,41 +955,30 @@ angular.module('starter.controllers', [])
                             window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
                             window.localStorage.removeItem("mAccount");
                             $rootScope.mAccount = "";
-                            
-                             var UserId = $rootScope.mUser.Id;
-                                $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
-                                    .then(function (result) {
-                                        if(result.rows.length > 0){
-                                            for(var pt=0;pt<result.rows.length;pt++){
-                                                if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 10){
-                                                    $state.go('syncuserdata', {
-                                                            location: false
-                                                        });
-                                                }else
-                                                {
-                                                     $state.go('app.tab.accounts', {
-                                                            location: false
-                                                     });
-                                                }
-                                            }
-                                        }else{
 
-                                            $state.go('syncuserdata', {
-                                                location: false
-                                            });
-
-                                        }
-                                });
+                            $state.go('accounts', {
+                                location: false
+                            });
 
                         } else {
                             $ionicLoading.hide();
                             $cordovaKeyboard.close();
-                            
-                            $rootScope.popup = $ionicPopup.alert({
+
+                          $ionicHistory.clearHistory();
+                            $ionicHistory.clearCache();
+                            $rootScope.mUser = User;
+                            window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
+                            $ionicLoading.hide();
+
+                            $state.go('accounts', {
+                                location: false
+                            });*/
+
+                            /*  $rootScope.popup = $ionicPopup.alert({
                                 title: 'Wrong Password',
                                 template: 'Incorrect details please check password'
-                            });
-                       }
+                            });*/
+                       // }
                     } else {
                         $ionicLoading.hide();
                         $rootScope.popup = $ionicPopup.alert({
@@ -1519,7 +1539,7 @@ angular.module('starter.controllers', [])
          $rootScope.orderhList = [];
          $scope.pageNumD = 0;
          $scope.orderhListLength = 0;
-         $scope.data.monthfilter = month;
+
          $scope.loadMoreOrderDate();
 
     }
@@ -1531,36 +1551,19 @@ angular.module('starter.controllers', [])
         }
 
 
-            var len = $scope.data.monthfilter.toString();
-            len = len.length;
-            var dateQuery = "";
-
-
-
+    
             var cDate = new Date();
             var cmonth = cDate.getMonth();
             var pastmonth = cmonth - $scope.data.monthfilter;
             var pDate = cDate.setMonth(pastmonth);
-
-
-            if(len > 3){
-                var fRdate = new Date("01/01/"+$scope.data.monthfilter);
-                fRdate = fRdate.getTime();
-                var tOdate = new Date("12/31/"+$scope.data.monthfilter);
-                tOdate = tOdate.getTime();
-                dateQuery = 'orderHistoryNumericDate>="' + fRdate + '" AND orderHistoryNumericDate<="' + tOdate + '" ';
-            }else{
-                dateQuery = 'orderHistoryNumericDate>="' + pDate + '" ';
-            }
-
             if($scope.pageNumD == 0){
-                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND '+dateQuery).then(function(result){
+                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND orderHistoryNumericDate>="' + pDate + '"').then(function(result){
                         $scope.orderhListLength = result.rows.item(0)['count(*)'];
                     })
              }
 
 //"' + $rootScope.mAccount.AccountNumber + '"
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND '+dateQuery+' order by orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
+            $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND orderHistoryNumericDate>="' + pDate + '" order by orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
                 .then(
                     function (result) {
                         //$rootScope.orderhList = [];
@@ -1598,11 +1601,6 @@ angular.module('starter.controllers', [])
 
     $scope.makeDate = function (date) {
         return moment(date).format('DD MMM YYYY')
-    }
-
-    $scope.makeYear = function (year) {
-        var d = new Date();
-        return d.getFullYear() - year;
     }
 
     $rootScope.ordertoBasket = function (Id, ptitle, title, price, qty, StockQty) {

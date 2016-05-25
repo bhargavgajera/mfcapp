@@ -13,11 +13,13 @@
                     <div class="input-label">
                         Orders placed in
                     </div>
-                    <select ng-model="monthfilter" ng-change="filterbyMonth(monthfilter)">
+                    <select ng-model="data.monthfilter" ng-change="filterbyMonth(data.monthfilter)">
                         <option value="72">All</option>
                         <option value="1">Last 30 days</option>
                         <option value="3">Last 3 months</option>
                         <option value="6">Last 6 months</option>
+                        <option value="{{makeYear(1)}}">{{makeYear(1)}}</option>
+                        <option value="{{makeYear(2)}}">{{makeYear(2)}}</option>
                     </select>
                 </label>
             </div>
@@ -36,24 +38,24 @@
         </div>
 
 
-
+        <ion-infinite-scroll on-infinite="loadMoreOrderDate()" ng-show="orderhList.length < orderhListLength" distance="1%" ></ion-infinite-scroll>
 
     </ion-content>
     <ion-content class=" has-subheader full-width byproduct" has-bouncing="true" ng-show="byproduct">
         <div class="list">
             <div class="item item-option">
-                <form ng-submit="searchOrder(searchData)" class="search-form" novalidate>
+                <form ng-submit="searchOrder(data.searchData)" class="search-form" novalidate>
                     <label class="item-input-wrapper">
-                        <input type="search" placeholder="Search By Product" ng-model="searchData" name="searchdata" ng-disabled="orderhList.length < 1">
+                        <input type="search" placeholder="Search By Product" ng-model="data.searchData" name="searchdata" ng-disabled="orderhList.length < 1">
                     </label>
                     <button class="button button-positive" type="submit"><i class="icon ico-search" ng-disabled="orderhList.length < 1"></i></button>
                 </form>
             </div>
 
             <div class="order-wrapper" ng-repeat="order in searchorderList track by $index" ng-show="searchorderList.length > 0">
-                <li class="item date-item" ng-if="checkDate(order.orderHistoryDate,$index)">
+                <li class="item date-item" >
                     <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
-                    <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
+                    <i class="item-icon ico-calendar"></i> <span class="date-title" >{{makeDate(order.orderHistoryDate)}}</span>
                 </li>
                 <li class="item item-text-wrap">
                     <div class="item-wrapper">
@@ -69,11 +71,12 @@
                 Order history not available
             </li>
 
-            <div class="card search-msg" ng-hide="searchorderList || orderhList.length < 1">
+            <div class="card search-msg" ng-hide="searchorderList">
                 <div class="item item-icon-left">
                     <i class="icon ion-android-arrow-up royal slideInUp"></i> Search order history
                 </div>
             </div>
         </div>
+        <ion-infinite-scroll on-infinite="loadMoreOrder(data.searchData)" ng-if="searchorderList.length < searchorderLength " distance="1%" ></ion-infinite-scroll>
     </ion-content>
 </ion-view>

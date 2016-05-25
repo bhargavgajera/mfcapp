@@ -30,7 +30,7 @@
                         <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"><i class="ico-delete icon-big"></i></button>
                     </td>
                     <td valign="top" class="price">
-                        <button class="button button-small button-clear" ng-class="{'button-stable':!priceData[$index].tbc,'button-positive':priceData[$index].tbc}" ng-click="priceData[$index].tbc = !priceData[$index].tbc;UpdateProductTbc(product.basketID,priceData[$index].tbc)"><i class="ico-right icon-big"></i></button>
+                        <button class="button button-small button-clear" ng-if="mUser.CustType == 3" ng-class="{'button-stable':!priceData[$index].tbc,'button-positive':priceData[$index].tbc}" ng-click="priceData[$index].tbc = !priceData[$index].tbc;UpdateProductTbc(product.basketID,priceData[$index].tbc)"><i class="ico-right icon-big"></i></button>
                         <input type="number" class="simple-input" ng-model="priceData[$index].uprice" ng-show="!priceData[$index].tbc" placeholder="Unit Price (ex VAT)" ng-blur="updatePrice(product.basketID,priceData[$index].uprice)" ng-class="{'input-disabled':canChangePrice}" ng-disabled="canChangePrice">
                         <input type="text" class="simple-input" ng-show="priceData[$index].tbc" value="TBC" disabled>
                     </td>
