@@ -497,6 +497,8 @@ angular.module('starter.controllers', [])
                                 }
                                 var sDate = new Date().getTime();
                                 window.localStorage.setItem("syncDate",sDate);
+                                $rootScope.lastsyncDate = sDate;
+    
 
                             },
                             function (error) {
@@ -957,7 +959,7 @@ angular.module('starter.controllers', [])
             .then(
                 function (result) {
                     if (result.rows.length > 0) {
-                            var User = result.rows.item(0);
+                           /* var User = result.rows.item(0);
                             $ionicHistory.clearHistory();
                             $ionicHistory.clearCache();
                             $rootScope.mUser = User;
@@ -989,12 +991,12 @@ angular.module('starter.controllers', [])
                                             });
 
                                         }
-                                });
+                                });*/
                         
                         //var hash = bcrypt.hashSync(Password, User.SaltUsed);
                         //if (hash == User.Password) {
                         
-                        /*var User = result.rows.item(0);
+                        var User = result.rows.item(0);
                         if (bcrypt.compareSync(Password, User.Password))
                         {
                             $ionicLoading.hide();
@@ -1040,7 +1042,7 @@ angular.module('starter.controllers', [])
                                 title: 'Wrong Password',
                                 template: 'Incorrect details please check password'
                             });
-                       }*/
+                       }
                     } else {
                         $ionicLoading.hide();
                         $rootScope.popup = $ionicPopup.alert({
@@ -1053,7 +1055,7 @@ angular.module('starter.controllers', [])
                     $ionicLoading.hide();
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Error',
-                        template: 'Somthing went wrong'
+                        template: 'Something went wrong'
                     });
                     console.log("Error on loading: " + error.message);
                 });
@@ -1217,7 +1219,7 @@ angular.module('starter.controllers', [])
                     $ionicLoading.hide();
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Error',
-                        template: 'Somthing went wrong'
+                        template: 'Something went wrong'
                     });
                     console.log("Error on loading: " + error.message);
                 });
@@ -1264,7 +1266,7 @@ angular.module('starter.controllers', [])
             $ionicLoading.hide();
             $rootScope.popup = $ionicPopup.alert({
                 title: 'Error',
-                template: 'Somthing went wrong'
+                template: 'Something went wrong'
             });
             console.log("Error on loading: " + error.message);
         });    
@@ -1297,7 +1299,7 @@ angular.module('starter.controllers', [])
                     $ionicLoading.hide();
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Error',
-                        template: 'Somthing went wrong'
+                        template: 'Something went wrong'
                     });
                     console.log("Error on loading: " + error.message);
                 });
@@ -1344,6 +1346,7 @@ angular.module('starter.controllers', [])
     }
    
      $scope.loadMore = function() {
+        //console.log('loadAccounts');
             if($scope.data.accountSearch != ''){
                 $scope.accountFilter($scope.data.accountSearch);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -1378,17 +1381,22 @@ angular.module('starter.controllers', [])
                                 for (var i = 0; i < result.rows.length; i++) {
                                     $scope.accountList.push(result.rows.item(i));
                                 }
+                                
+                                if (result.rows.length < $scope.limitData) {
+                                     $scope.noMoreItemsAvailable = true;
+                                }
                                 $scope.pageNum = $scope.pageNum + 1;
                             }else{
-                                $scope.noMoreItemsAvailable = false;
+                                $scope.noMoreItemsAvailable = true;
                             }
+                            
                         },
                         function (error) {
                             $ionicLoading.hide();
                             $scope.noMoreItemsAvailable = false;
                             $rootScope.popup = $ionicPopup.alert({
                                 title: 'Error',
-                                template: 'Somthing went wrong'
+                                template: 'Something went wrong'
                             });
                             console.log("Error on loading: " + error.message);
                     });
@@ -1397,7 +1405,10 @@ angular.module('starter.controllers', [])
     }
 
     $scope.accountFilter = function (searchtext) {
-        
+        if(searchtext == ''){
+            return false;
+        }
+        //console.log('accountFilter');
         var pageOffset = 0;
         if($scope.pageSeachNum > 0){
            pageOffset =  $scope.pageSeachNum * $scope.limitData;    
@@ -1422,7 +1433,7 @@ angular.module('starter.controllers', [])
                         $ionicLoading.hide();
                         $rootScope.popup = $ionicPopup.alert({
                             title: 'Error',
-                            template: 'Somthing went wrong'
+                            template: 'Something went wrong'
                         });
                         console.log("Error on loading: " + error.message);
                     });
@@ -1558,7 +1569,7 @@ angular.module('starter.controllers', [])
             function (error) {
                 $rootScope.popup = $ionicPopup.alert({
                     title: 'Error',
-                    template: 'Somthing went wrong'
+                    template: 'Something went wrong'
                 });
                 console.log("Error on loading: " + error);
             });
@@ -1681,7 +1692,7 @@ angular.module('starter.controllers', [])
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Error',
-                        template: 'Somthing went wrong'
+                        template: 'Something went wrong'
                     });
                     console.log("Error on loading: " + error.message);
                 });
@@ -1817,7 +1828,7 @@ angular.module('starter.controllers', [])
                                 $ionicLoading.hide();
                                 $rootScope.popup = $ionicPopup.alert({
                                     title: 'Error',
-                                    template: 'Somthing went wrong'
+                                    template: 'Something went wrong'
                                 });
                                 console.log("Error on loading: " + error.message);
                             });
@@ -1993,7 +2004,7 @@ angular.module('starter.controllers', [])
                 $ionicLoading.hide();
                 $rootScope.popup = $ionicPopup.alert({
                     title: 'Error',
-                    template: 'Somthing went wrong'
+                    template: 'Something went wrong'
                 });
                 console.log("Error on loading: " + error.message);
             });
@@ -2034,7 +2045,7 @@ angular.module('starter.controllers', [])
                                 $ionicLoading.hide();
                                 $rootScope.popup = $ionicPopup.alert({
                                     title: 'Error',
-                                    template: 'Somthing went wrong'
+                                    template: 'Something went wrong'
                                 });
                                 console.log("Error on loading: " + error.message);
                             });
@@ -2053,7 +2064,7 @@ angular.module('starter.controllers', [])
                                     $ionicLoading.hide();
                                     $rootScope.popup = $ionicPopup.alert({
                                         title: 'Error',
-                                        template: 'Somthing went wrong'
+                                        template: 'Something went wrong'
                                     });
                                     console.log("Error on loading: " + error.message);
                                 });
@@ -2066,7 +2077,7 @@ angular.module('starter.controllers', [])
                 $ionicLoading.hide();
                 $rootScope.popup = $ionicPopup.alert({
                     title: 'Error',
-                    template: 'Somthing went wrong'
+                    template: 'Something went wrong'
                 });
                 console.log("Error on loading: " + error.message);
             });
@@ -2089,7 +2100,7 @@ angular.module('starter.controllers', [])
                                     $ionicLoading.hide();
                                     $rootScope.popup = $ionicPopup.alert({
                                         title: 'Error',
-                                        template: 'Somthing went wrong'
+                                        template: 'Something went wrong'
                                     });
                                     console.log("Error on loading: " + error.message);
                                 });
@@ -2100,7 +2111,7 @@ angular.module('starter.controllers', [])
                 $ionicLoading.hide();
                 $rootScope.popup = $ionicPopup.alert({
                     title: 'Error',
-                    template: 'Somthing went wrong'
+                    template: 'Something went wrong'
                 });
                 console.log("Error on loading: " + error.message);
             });
@@ -2157,7 +2168,7 @@ angular.module('starter.controllers', [])
                     $ionicLoading.hide();
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Error',
-                        template: 'Somthing went wrong'
+                        template: 'Something went wrong'
                     });
                     console.log("Error on loading: " + error.message);
                 });
