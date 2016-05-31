@@ -27,9 +27,21 @@
 
         <!--Test Area-->
 
-
+        <div class="card search-msg" ng-hide="searchproductList">
+            <div class="item item-icon-left">
+                <i class="icon ion-android-arrow-up royal slideInUp"></i> Search Products
+            </div>
+        </div> 
         <!--END-->
-
+        <div class="card" ng-hide="searchproductList">
+            <div class="item">
+                <h2>Recent Search</h2>
+            </div>
+          <div class="item item-divider" ng-click="searchProduct(serachWordL.word)" ng-repeat="serachWordL in searchWordList">
+              {{serachWordL.word}}
+          </div>
+          
+        </div>
 
         <div class="productlist">
             <ion-list>
@@ -56,11 +68,7 @@
                 </ion-item>
             </ion-list>
 
-            <div class="card search-msg" ng-hide="searchproductList">
-                <div class="item item-icon-left">
-                    <i class="icon ion-android-arrow-up royal slideInUp"></i> Search Products
-                </div>
-            </div>
+            
         </div>
     </ion-content>
 </ion-view>

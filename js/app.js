@@ -74,8 +74,10 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX order_history_idx1 ON order_history(prodID,AccountNumber)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER,stokQnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0)');
+
+         $cordovaSQLite.execute($rootScope.DB, 'ALTER TABLE basket ADD COLUMN UserID INTEGER');
         
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
+		 //$cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
 		 
@@ -84,6 +86,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER PRIMARY KEY, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
 
          $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS syncLog(ID INTEGER PRIMARY KEY AUTOINCREMENT, apiName TEXT, insertedDate TEXT, insertedLog TEXT, acType INTEGER, acId INTEGER)');
+
+         $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS searchText(ID INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT not null unique)');
 
 		   if (typeof menuList == "undefined") 
 		   var menuList = [];

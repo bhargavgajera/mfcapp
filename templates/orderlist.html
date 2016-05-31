@@ -24,9 +24,9 @@
                 </label>
             </div>
 
-            <li class="item date-item" ng-repeat="order in orderhList  | orderBy:'orderHistoryDate':true track by $index " ng-if="checkDate(order.orderHistoryDate,$index)" ng-show="orderhList.length > 0">
-                <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
-                <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.orderHistoryDate)">12 November 2015</span>
+            <li class="item date-item" ng-repeat="order in orderhList" ng-show="orderhList.length > 0">
+                <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.histDate}}"> <i class="ico-eye icon-big"></i></a>
+                <i class="item-icon ico-calendar"></i> <span class="date-title" ng-bind="makeDate(order.histDate)">12 November 2015</span>
             </li>
 
 
@@ -54,14 +54,14 @@
 
             <div class="order-wrapper" ng-repeat="order in searchorderList track by $index" ng-show="searchorderList.length > 0">
                 <li class="item date-item" >
-                    <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.orderHistoryDate}}"> <i class="ico-eye icon-big"></i></a>
-                    <i class="item-icon ico-calendar"></i> <span class="date-title" >{{makeDate(order.orderHistoryDate)}}</span>
+                    <a class="button button-positive button-small pull-right" ng-href="#/app/tab/orderlist/{{order.date}}"> <i class="ico-eye icon-big"></i></a>
+                    <i class="item-icon ico-calendar"></i> <span class="date-title" >{{makeDate(order.date)}}</span>
                 </li>
-                <li class="item item-text-wrap">
+                <li class="item item-text-wrap" ng-repeat="proOrder in searchorderList[$index].order">
                     <div class="item-wrapper">
                         <div class="content">
-                            <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
-                            <span class="qty positive">Qty : {{order.quantity}}</span>
+                            <h3><span ng-if="proOrder.parentTitle">{{proOrder.parentTitle + " - " }} </span><span ng-if="proOrder.prodTitle">{{proOrder.prodTitle}}</span></h3>
+                            <span class="qty positive">Qty : {{proOrder.quantity}}</span>
                         </div>
                     </div>
                 </li>
@@ -77,6 +77,6 @@
                 </div>
             </div>
         </div>
-        <ion-infinite-scroll on-infinite="loadMoreOrder(data.searchData)" ng-if="searchorderList.length < searchorderLength " distance="1%" ></ion-infinite-scroll>
+        <ion-infinite-scroll on-infinite="loadMoreOrder(data.searchData)" ng-if="searchorderList.length < searchorderLength" distance="1%" ></ion-infinite-scroll>
     </ion-content>
 </ion-view>
