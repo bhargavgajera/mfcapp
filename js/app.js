@@ -15,12 +15,13 @@ App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen) {
     
      //$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
-     $rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false}]; 
-     $rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Orderhistory',sync:false}]; 
-    
+	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false}]; 
+	$rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Orderhistory',sync:false}]; 
+
     if (window.localStorage.getItem("mUser") != "undefined") {
         $rootScope.mUser = JSON.parse(window.localStorage.getItem("mUser"));
     }
+
     if (window.localStorage.getItem("mAccount") != "undefined") {
         $rootScope.mAccount = JSON.parse(window.localStorage.getItem("mAccount"));
     }
@@ -33,19 +34,41 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
     $rootScope.contactData = [];
     $rootScope.accountData = [];
    
-    $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
-	  $rootScope.loadOrders();
-      $rootScope.isOffline = $cordovaNetwork.isOffline();
-    })
     
-     $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+    $rootScope.todayDate = new Date().getTime();
+    $rootScope.tokenExpireDate = "";
+    $rootScope.headers = "";
+
+    if (window.localStorage.getItem("tokenExpDate") != "undefined" && !isNaN(window.localStorage.getItem("tokenExpDate"))) {
+        $rootScope.tokenExpireDate = window.localStorage.getItem("tokenExpDate");
+    }
+
+    if (window.localStorage.getItem("mfcToken") != "undefined") {
+        $rootScope.headers = {headers:{'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer '+window.localStorage.getItem("mfcToken") }}
+    }
+
+
+    $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
+
+		if($rootScope.tokenExpireDate != ""  && $rootScope.todayDate > Number($rootScope.tokenExpireDate)){
+		    $rootScope.getToken();
+		}else if($rootScope.tokenExpireDate == ""){
+		    $rootScope.getToken();
+		}else if($rootScope.headers == ''){
+		    $rootScope.getToken();
+		}else{
+			$rootScope.loadOrders();
+		}
+		$rootScope.isOffline = $cordovaNetwork.isOffline();
+    })
+
+    
+	$rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
 		  $rootScope.isOffline = $cordovaNetwork.isOffline();
     })
     
     
-    $ionicPlatform.ready(function () {
-        //$cordovaSplashscreen.hide();
-        
+    $ionicPlatform.ready(function () {        
         if (!window.isTablet)
         {
             window.plugins.orientationLock.lock("portrait")
@@ -83,14 +106,14 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice REAL, prodCode TEXT, VATRate REAL, quantity INTEGER, shipped TEXT, rowTotal REAL, rowTotalWithVAT REAL)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER PRIMARY KEY, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(relatedID INTEGER PRIMARY KEY, prodID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
 
          $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS syncLog(ID INTEGER PRIMARY KEY AUTOINCREMENT, apiName TEXT, insertedDate TEXT, insertedLog TEXT, acType INTEGER, acId INTEGER)');
 
          $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS searchText(ID INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT not null unique)');
 
 		   if (typeof menuList == "undefined") 
-		   var menuList = [];
+		   	var menuList = [];
 			$cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM categories')
 			  .then(
 				function(result) {
@@ -152,7 +175,10 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
         mainPage = "/sync";
     } else if (window.localStorage.getItem("mUser") == null || window.localStorage.getItem("mUser") == "undefined"){
          mainPage = "/login";
+    } else if (window.localStorage.getItem("AccountSyncDate") == null || window.localStorage.getItem("AccountSyncDate") == "undefined"){
+    	mainPage = "/syncuserdata";
     }
+    
     
     $urlRouterProvider.otherwise(mainPage);
     

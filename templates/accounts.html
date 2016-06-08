@@ -55,6 +55,6 @@
                 <i class="icon ion-android-arrow-up royal slideInUp"></i> Search Accounts
             </div>
         </div>
-        <ion-infinite-scroll on-infinite="loadMore()" ng-if="!noMoreItemsAvailable" distance="1%" ></ion-infinite-scroll>
+        <ion-infinite-scroll on-infinite="loadMore()" ng-if="!noMoreItemsAvailable && dReady" distance="1%" ></ion-infinite-scroll>
     </ion-content>
 </ion-view>

@@ -4,10 +4,15 @@
          <div class="logo"><img src="img/logo.png"></div>
          <div class="list list-inset padding">
             <div class="item item-icon-left " ng-repeat="list in syncUserObj">
-              <i class="icon ion-android-sync " ng-class="{'spin':list.sync == true}" ng-hide="list.sync == 'done'"></i><i class="icon ion-checkmark-circled" ng-show="list.sync == 'done'"></i> {{list.title}}
+              <i class="icon ion-android-sync " ng-class="{'spin':list.sync == true}" ng-hide="list.sync == 'done'"></i>
+              <i class="icon ion-checkmark-circled" ng-show="list.sync == 'done'"></i> {{list.title}}
             </div>
             
         </div>
+
+        <button class="button button-calm" ng-click="handleUserClick()" 
+        ng-hide="syncUserObj[syncUserObj.length-1].sync == 'done'" 
+        ng-disabled="syncButton">Sync User Data</button>
         </div>
     </ion-content>
 </ion-view>

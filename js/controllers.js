@@ -20,8 +20,7 @@ angular.module('starter.controllers', [])
         $rootScope.syncButton = false;
         $rootScope.lastsyncDate;
         $scope.innerSync = false;
-        $rootScope.headers = {headers:{
-            'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer 2WsLcqqcjxJ6HYk5RwJkSYm9KICe1gF_HLVS1BFUnBGXwyCCSTnQLaRaCgrGnez3K6YbEu_XZuimbG3U5JnTJktOumcm5sGk_2BeChMKYtOBM-XMCyiHLGx-TXSgsW6-18g-pH2vi_uX1SrLTkIPBZ4M5qSbwaXm8iKSX_gUgHikVX7XFKeuCfLz2gXhNx2StudtagaHXiKPouWaHVkfRcHm1QV_NowbPuBsn7X4Ns3oGhl-tlnV1CsrwUAMZRxr3-itz4oVbWz3WHlShOvlB4ZwZSp3X8rMLZ5qCD5NmCDpl6lOY94KBsU3d-rpiJrcciEwmOP-SpMQ6RSZr2yIQ1_7HJ6vCfBm9rbNulNqD6KSD1YZjAFdkMz29q1exGeVpSmnH_GCXSGrThkVWCV2FivBmXrI-Ot_kJY0L7yQT86rxXp0OKpbDRNFXyR7WNBU75QVLkR70se9fHmTn0WNZxiU8fpDc-E1pj9p-W8WXtE'}}
+       /* $rootScope.headers = {headers:{'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer 2WsLcqqcjxJ6HYk5RwJkSYm9KICe1gF_HLVS1BFUnBGXwyCCSTnQLaRaCgrGnez3K6YbEu_XZuimbG3U5JnTJktOumcm5sGk_2BeChMKYtOBM-XMCyiHLGx-TXSgsW6-18g-pH2vi_uX1SrLTkIPBZ4M5qSbwaXm8iKSX_gUgHikVX7XFKeuCfLz2gXhNx2StudtagaHXiKPouWaHVkfRcHm1QV_NowbPuBsn7X4Ns3oGhl-tlnV1CsrwUAMZRxr3-itz4oVbWz3WHlShOvlB4ZwZSp3X8rMLZ5qCD5NmCDpl6lOY94KBsU3d-rpiJrcciEwmOP-SpMQ6RSZr2yIQ1_7HJ6vCfBm9rbNulNqD6KSD1YZjAFdkMz29q1exGeVpSmnH_GCXSGrThkVWCV2FivBmXrI-Ot_kJY0L7yQT86rxXp0OKpbDRNFXyR7WNBU75QVLkR70se9fHmTn0WNZxiU8fpDc-E1pj9p-W8WXtE'}}*/
 
         $rootScope.menuColor = ['farm', 'horse', 'dog', 'hygin'];
 
@@ -62,6 +61,7 @@ angular.module('starter.controllers', [])
                 window.localStorage.removeItem("mAccount");
                 $ionicHistory.clearCache();
                 $ionicViewService.clearHistory();
+                $rootScope.mUser = null;
             }, 30);
         }
 
@@ -88,19 +88,13 @@ angular.module('starter.controllers', [])
 
         }
 
-        $scope.checkDate = function(){
-          //  console.log($rootScope)
-            
+        $scope.checkDate = function(){            
             var cDate = new Date(Number($rootScope.lastsyncDate)).getDate();
             var futureDate = new Date(Number($rootScope.lastsyncDate)).setDate(cDate+7);
 
-            // console.log(futureDate)
-           // console.log(Number($rootScope.lastsyncDate))
-            if (futureDate < new Date().getTime() )
-            {
+            if (futureDate < new Date().getTime() ){
                 return true;
-            }else
-            {
+            }else {
                 return false;
             }    
             
@@ -131,7 +125,7 @@ angular.module('starter.controllers', [])
 
 
 
-        $scope.getToken = function(){
+        $rootScope.getToken = function(){
             http({
                 method: 'POST',
                 url: 'http://mfcapi.radiatordedicated.co.uk/token',
@@ -144,13 +138,20 @@ angular.module('starter.controllers', [])
                 },
                 data: {grant_type:'password', username:'maxi', password:'w:rCWg]MSWZ4Cr5J'}
             }).success(function (result) { 
+                $rootScope.loadOrders();
+                //console.log(result);
+                var expDate = new Date(result[".expires"]);
+                var expDateTime = expDate.setDate(expDate.getDate()-6);    
+                $rootScope.tokenExpireDate = expDateTime;
 
-                console.log(result);
+                window.localStorage.setItem("tokenExpDate", expDateTime);
+
                 window.localStorage.setItem("mfcToken", result.access_token);
-
+                $rootScope.headers = {headers:{'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer '+result.access_token }}
 
             });
         }
+
 
 
         $rootScope.loadOrders = function () {
@@ -177,7 +178,7 @@ angular.module('starter.controllers', [])
                                     }, true);
                                     el.orderDetail = [];
                                     el.orderDetail = orderRecords;
-                                    console.log(el);
+                                   // console.log(el);
                                     $http.post("http://mfcapi.radiatordedicated.co.uk/api/Order", el,$rootScope.headers).then(function (result) {
                                             tempCntr++;
                                             if (result.data) {
@@ -198,15 +199,9 @@ angular.module('starter.controllers', [])
                                             $scope.syncError(error);
                                         });
                                 })
-                            } else {
-                                //$rootScope.syncObj[0].sync = 'done';
-                                //$scope.loadContacts();
                             }
 
                         });
-                    } else {
-                        //$rootScope.syncObj[0].sync = 'done';
-                        //$scope.loadContacts();
                     }
                 })
         }
@@ -215,11 +210,7 @@ angular.module('starter.controllers', [])
 
 
         $scope.loadContacts = function () {
-            console.log($scope.innerSync);
             if ($scope.innerSync) {
-                
-                $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Orderhistory',sync:false});
-
                 ionicLoading.show({
                     templateUrl: 'templates/syncpopup.html'
                 });
@@ -227,69 +218,49 @@ angular.module('starter.controllers', [])
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
             $rootScope.syncObj[0].sync = true;
-            
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Contacts"')
-                .then(function (result) {
-                    if(result.rows.length > 0){
-                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
-                           $scope.callContacts(1);
-                        }else{
-                            $scope.callContacts(0);
-                        }
-
-                    }else{
-                        $scope.callContacts(1);
+                   
+            $http.get('http://mfcapi.radiatordedicated.co.uk/api/Contact',$rootScope.headers).then(function (contacts) {
+                    $scope.contactList = contacts.data;
+                    var i, j, temparray, chunk = 100;
+                    for (i = 0, j = $scope.contactList.length; i < j; i += chunk) {
+                        temparray = $scope.contactList.slice(i, i + chunk);
+                        var query = "INSERT OR REPLACE INTO contacts (Id, Name, UserName, Password, CustType, CustRepTerritory, SaltUsed, RelatedAccountNumber) VALUES ";
+                        var data = [];
+                        var rowArgs = [];
+                        angular.forEach(temparray, function (el, index) {
+                            rowArgs.push("(?,?,?,?,?,?,?,?)");
+                            data.push(el.Id);
+                            data.push(el.Name);
+                            data.push(el.UserName);
+                            data.push(el.Password);
+                            data.push(el.CustType);
+                            data.push(el.CustRepTerritory);
+                            data.push(el.SaltUsed);
+                            data.push(el.RelatedAccountNumber);
+                        });
+                        query += rowArgs.join(", ");
+                        $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
+                            console.log("Error on saving: " + err.message);
+                        });
                     }
+
+
+                    if ($scope.innerSync) {
+                        $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Orderhistory',sync:false});
+                    }
+                    $rootScope.syncObj[0].sync = 'done';
+                    $scope.loadProducts();
+
+
+                },
+                function (error) {
+                    $scope.syncError(error);
             })
-
-           $scope.callContacts = function(updateTb)
-           {
-                if(updateTb == 1){
-                        
-                    $http.get('http://mfcapi.radiatordedicated.co.uk/api/Contact',$rootScope.headers).then(function (contacts) {
-                            $scope.contactList = contacts.data;
-                            var i, j, temparray, chunk = 100;
-                            for (i = 0, j = $scope.contactList.length; i < j; i += chunk) {
-                                temparray = $scope.contactList.slice(i, i + chunk);
-                                var query = "INSERT OR REPLACE INTO contacts (Id, Name, UserName, Password, CustType, CustRepTerritory, SaltUsed, RelatedAccountNumber) VALUES ";
-                                var data = [];
-                                var rowArgs = [];
-                                angular.forEach(temparray, function (el, index) {
-                                    rowArgs.push("(?,?,?,?,?,?,?,?)");
-                                    data.push(el.Id);
-                                    data.push(el.Name);
-                                    data.push(el.UserName);
-                                    data.push(el.Password);
-                                    data.push(el.CustType);
-                                    data.push(el.CustRepTerritory);
-                                    data.push(el.SaltUsed);
-                                    data.push(el.RelatedAccountNumber);
-                                });
-                                query += rowArgs.join(", ");
-                                $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
-                                    console.log("Error on saving: " + err.message);
-                                });
-                            }
-                            $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Contacts"),"Contacts","'+currentDate+'","'+curTimeLog+'",0,0)');
-                            $rootScope.syncObj[0].sync = 'done';
-                            $scope.loadProducts();
-
-
-                        },
-                        function (error) {
-                            $scope.syncError(error);
-                    })
-                }else{
-                            $rootScope.syncObj[0].sync = 'done';
-                            $scope.loadProducts();
-                }
-           }   
+               
+        
             
 
         }
-
-
-        
 
 
 
@@ -297,74 +268,51 @@ angular.module('starter.controllers', [])
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
             $rootScope.syncObj[1].sync = true;
+        
+            $http.get('http://mfcapi.radiatordedicated.co.uk/api/Product',$rootScope.headers).then(function (products) {
+                    $scope.productList = products.data;
 
-            
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Products"')
-                .then(function (result) {
-                    if(result.rows.length > 0){
-                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
-                            $scope.callProducts(1);   
-                        }else{
-                             $scope.callProducts(0);
-                        }
-                    }else{
-                        $scope.callProducts(1);
-                    }
-            })
-            $scope.callProducts = function(updateTb)
-            {
-                if(updateTb == 1){
-                    
-                    $http.get('http://mfcapi.radiatordedicated.co.uk/api/Product',$rootScope.headers).then(function (products) {
-                            $scope.productList = products.data;
-
-                            var i, j, temparray, chunk = 50;
-                            for (i = 0, j = $scope.productList.length; i < j; i += chunk) {
-                                temparray = $scope.productList.slice(i, i + chunk);
-                                var query = "INSERT OR REPLACE INTO products (ProdID, ProdCode, ProdParentID, ProdParentCode, ProdTitle, ProdDesc , ProdStockQty, prodHidePrice, PriceExVat, PriceIncVat, OnSale, SalePriceExVat, SalePriceIncVat, CostPrice, ProdUnitPrice, ProductCategory, Image , relatedProductIDs) VALUES ";
-                                var data = [];
-                                var rowArgs = [];
-                                angular.forEach(temparray, function (el, index) {
-                                    rowArgs.push("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                                    data.push(el.ProdID);
-                                    data.push(el.ProdCode);
-                                    data.push(el.ProdParentID);
-                                    data.push(el.ProdParentCode);
-                                    data.push(el.ProdTitle);
-                                    data.push(el.ProdDesc);
-                                    data.push(el.ProdStockQty);
-                                    data.push(el.prodHidePrice);
-                                    data.push(el.PriceExVat);
-                                    data.push(el.PriceIncVat);
-                                    data.push(el.OnSale);
-                                    data.push(el.SalePriceExVat);
-                                    data.push(el.SalePriceIncVat);
-                                    data.push(el.CostPrice);
-                                    data.push(el.ProdUnitPrice);
-                                    data.push(el.ProductCategory);
-                                    data.push(el.Image);
-                                    data.push(el.relatedProductIDs);
-                                });
-
-                                query += rowArgs.join(", ");
-                                $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
-                                    console.log("Error on saving: " + err.message);
-                                });
-                            }
-                            $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Products"),"Products","'+currentDate+'","'+curTimeLog+'",0,0)');
-                            $rootScope.syncObj[1].sync = 'done';
-                            $scope.loadCategory();
-
-
-                        },
-                        function (error) {
-                            $scope.syncError(error);
+                    var i, j, temparray, chunk = 50;
+                    for (i = 0, j = $scope.productList.length; i < j; i += chunk) {
+                        temparray = $scope.productList.slice(i, i + chunk);
+                        var query = "INSERT OR REPLACE INTO products (ProdID, ProdCode, ProdParentID, ProdParentCode, ProdTitle, ProdDesc , ProdStockQty, prodHidePrice, PriceExVat, PriceIncVat, OnSale, SalePriceExVat, SalePriceIncVat, CostPrice, ProdUnitPrice, ProductCategory, Image , relatedProductIDs) VALUES ";
+                        var data = [];
+                        var rowArgs = [];
+                        angular.forEach(temparray, function (el, index) {
+                            rowArgs.push("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            data.push(el.ProdID);
+                            data.push(el.ProdCode);
+                            data.push(el.ProdParentID);
+                            data.push(el.ProdParentCode);
+                            data.push(el.ProdTitle);
+                            data.push(el.ProdDesc);
+                            data.push(el.ProdStockQty);
+                            data.push(el.prodHidePrice);
+                            data.push(el.PriceExVat);
+                            data.push(el.PriceIncVat);
+                            data.push(el.OnSale);
+                            data.push(el.SalePriceExVat);
+                            data.push(el.SalePriceIncVat);
+                            data.push(el.CostPrice);
+                            data.push(el.ProdUnitPrice);
+                            data.push(el.ProductCategory);
+                            data.push(el.Image);
+                            data.push(el.relatedProductIDs);
                         });
-                }else{
+
+                        query += rowArgs.join(", ");
+                        $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
+                            console.log("Error on saving: " + err.message);
+                        });
+                    }
                     $rootScope.syncObj[1].sync = 'done';
                     $scope.loadCategory();
-                } 
-          }         
+
+
+                },
+                function (error) {
+                    $scope.syncError(error);
+            });        
         }
 
 
@@ -376,172 +324,124 @@ angular.module('starter.controllers', [])
 
             $rootScope.syncObj[2].sync = true;
             
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Category"')
-                .then(function (result) {
-                    if(result.rows.length > 0){
-                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
-                          $scope.callCategory(1);     
-                        }else{
-                            $scope.callCategory(0);
-                        }
-                    }else{
-                        $scope.callCategory(1);
+           
+            $http.get('http://mfcapi.radiatordedicated.co.uk/api/Categories',$rootScope.headers).then(function (categories) {
+
+                    var subMenu = categories.data;
+                    $rootScope.categoryList = angular.copy(subMenu);
+
+                    var i, j, temparray, chunk = 100;
+                    for (i = 0, j = subMenu.length; i < j; i += chunk) {
+                        temparray = subMenu.slice(i, i + chunk);
+                        var query = "INSERT OR REPLACE INTO categories (catID, catParentID, catTitle, CatOrder) VALUES ";
+                        var data = [];
+                        var rowArgs = [];
+                        angular.forEach(temparray, function (el, index) {
+                            rowArgs.push("(?,?,?,?)");
+                            data.push(el.catID);
+                            data.push(el.catParentID);
+                            data.push(el.catTitle);
+                            data.push(el.CatOrder);
+                        });
+                        query += rowArgs.join(", ");
+                        $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
+                            console.log("Error on saving: " + err.message);
+                        });
                     }
-            })
-            $scope.callCategory = function(updateTb)
-            {
-                    if(updateTb == 1){
-                        $http.get('http://mfcapi.radiatordedicated.co.uk/api/Categories',$rootScope.headers).then(function (categories) {
+                    $scope.prepareMenu(subMenu);
+                    $rootScope.syncObj[2].sync = 'done';
 
-                                var subMenu = categories.data;
-                                $rootScope.categoryList = angular.copy(subMenu);
+                    $scope.loadRelatedproducts()
 
-                                var i, j, temparray, chunk = 100;
-                                for (i = 0, j = subMenu.length; i < j; i += chunk) {
-                                    temparray = subMenu.slice(i, i + chunk);
-                                    var query = "INSERT OR REPLACE INTO categories (catID, catParentID, catTitle, CatOrder) VALUES ";
-                                    var data = [];
-                                    var rowArgs = [];
-                                    angular.forEach(temparray, function (el, index) {
-                                        rowArgs.push("(?,?,?,?)");
-                                        data.push(el.catID);
-                                        data.push(el.catParentID);
-                                        data.push(el.catTitle);
-                                        data.push(el.CatOrder);
-                                    });
-                                    query += rowArgs.join(", ");
-                                    $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {}, function (err) {
-                                        console.log("Error on saving: " + err.message);
-                                    });
-                                }
-                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Category"),"Category","'+currentDate+'","'+curTimeLog+'",0,0)');
-                                $scope.prepareMenu(subMenu);
-                                $rootScope.syncObj[2].sync = 'done';
-
-                                $scope.loadRelatedproducts()
-
-                            },
-                            function (error) {
-                                $scope.syncError(error);
-                            });
-                    }else{
-                            
-                                
-                            $rootScope.syncObj[2].sync = 'done';
-                            $scope.loadRelatedproducts();
-                            
-                    }
-            }            
-
+                },
+                function (error) {
+                    $scope.syncError(error);
+            });
+ 
         }
 
         $scope.loadRelatedproducts = function () {
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
 
-            $cordovaSQLite.execute($rootScope.DB, 'DROP TABLE relatedproducts');
-
-                $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
-
+           // $cordovaSQLite.execute($rootScope.DB, 'DROP TABLE relatedproducts');
+           // $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS relatedproducts(prodID INTEGER, relatedID INTEGER, relatedIsAccessory TEXT, relatedProdID INTEGER)');
             $rootScope.syncObj[3].sync = true;
             
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Relatedproducts"')
-                .then(function (result) {
-                    if(result.rows.length > 0){
-                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
-                           $scope.callRelatedProducts(1);
-                        }else{
-                            $scope.callRelatedProducts(0);
-                        }
-                    }else{
-                        $scope.callRelatedProducts(1);
+            var cnt = 0;
+           
+            $http.get('http://mfcapi.radiatordedicated.co.uk/api/relatedproducts',$rootScope.headers).then(function (relatedproducts) {
+                    $scope.relatedproducts = relatedproducts.data;
+
+                    var i, j, temparray, chunk = 100;
+                    for (i = 0, j = $scope.relatedproducts.length; i < j; i += chunk) {
+                        temparray = $scope.relatedproducts.slice(i, i + chunk);
+                        var query = "INSERT OR REPLACE INTO relatedproducts(relatedID, prodID, relatedIsAccessory, relatedProdID) VALUES ";
+                        var data = [];
+                        var rowArgs = [];
+                        angular.forEach(temparray, function (el, index) {
+                            rowArgs.push("(?,?,?,?)");
+                            data.push(el.relatedID);
+                            data.push(el.prodID);
+                            data.push(el.relatedIsAccessory);
+                            data.push(el.relatedProdID);
+                        });
+                        query += rowArgs.join(", ");
+                        $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {
+
+                        }, function (err) {
+                            console.log("Error on saving: " + err.message);
+                        });
                     }
-            })
 
+                    $rootScope.syncObj[3].sync = 'done';
 
-                var cnt = 0;
-            $scope.callRelatedProducts = function(updateTb)
-            {
-                   if(updateTb == 1){
-                        $http.get('http://mfcapi.radiatordedicated.co.uk/api/relatedproducts',$rootScope.headers).then(function (relatedproducts) {
-                                $scope.relatedproducts = relatedproducts.data;
-
-                                var i, j, temparray, chunk = 100;
-                                for (i = 0, j = $scope.relatedproducts.length; i < j; i += chunk) {
-                                    temparray = $scope.relatedproducts.slice(i, i + chunk);
-                                    var query = "INSERT OR REPLACE INTO relatedproducts(prodID, relatedID, relatedIsAccessory, relatedProdID) VALUES ";
-                                    var data = [];
-                                    var rowArgs = [];
-                                    angular.forEach(temparray, function (el, index) {
-                                        rowArgs.push("(?,?,?,?)");
-                                        data.push(el.prodID);
-                                        data.push(el.relatedID);
-                                        data.push(el.relatedIsAccessory);
-                                        data.push(el.relatedProdID);
-                                    });
-                                    query += rowArgs.join(", ");
-                                    $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {
-
-                                    }, function (err) {
-                                        console.log("Error on saving: " + err.message);
-                                    });
-                                }
-                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Relatedproducts"),"Relatedproducts","'+currentDate+'","'+curTimeLog+'",0,0)');
-                                //$scope.loadOrderhistory();
-                                if ($scope.innerSync) {
-                                    $rootScope.syncObj[3].sync = 'done';
-                                    $scope.loadAccounts();
-                                }else{
-                                    $rootScope.syncObj[3].sync = 'done';
-                                    $ionicLoading.hide();
-                                }
-                                var sDate = new Date().getTime();
-                                window.localStorage.setItem("syncDate",sDate);
-                                $rootScope.lastsyncDate = sDate;
-    
-
-                            },
-                            function (error) {
-                                $scope.syncError(error);
-                            });
-                 }else{
                     if ($scope.innerSync) {
-                        $rootScope.syncObj[3].sync = 'done';
                         $scope.loadAccounts();
-                    }else{
-                        $rootScope.syncObj[3].sync = 'done';
+                    }else{                       
                         $ionicLoading.hide();
-                    }    
-                 }
-             }
+                    }
+
+                    var sDate = new Date().getTime();
+                    window.localStorage.setItem("syncDate",sDate);
+                    $rootScope.lastsyncDate = sDate;
+
+                },
+                function (error) {
+                    $scope.syncError(error);
+                });
+
         }
 
 
-
-
         $scope.loadAccounts = function (){
-                if ($scope.innerSync) {
-                    $rootScope.syncObj[4].sync = true;
-                }
-                
                 var queryUrl = '';
                 var currentDate = new Date();
                 var curTimeLog = currentDate.getTime(); 
                 var UserId = $rootScope.mUser.Id;
-                $rootScope.syncUserObj[0].sync = true;
+
+
+                if ($scope.innerSync) {
+                    $rootScope.syncObj[4].sync = true;
+                }else{
+                	$rootScope.syncUserObj[0].sync = true;
+	            }
+	            	
                 if ($rootScope.mUser.CustType == 7){
-                    var ID = $rootScope.mUser.RelatedAccountNumber;
-                    queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?AccountID='+ID;
+                   var ID = $rootScope.mUser.RelatedAccountNumber;
+                   queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?AccountID='+ID;
                 } else if($rootScope.mUser.CustType == 3){
-                        var ID = $rootScope.mUser.CustRepTerritory;
-                        queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?TerritoryID='+ID;
+                    var ID = $rootScope.mUser.CustRepTerritory;
+                    queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?TerritoryID='+ID;
                 }
                 
                 $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Accounts" and acId = '+UserId)
                     .then(function (result) {
                         if(result.rows.length > 0){
-                            if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
+                            if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 2  || $scope.innerSync == true){
                                $scope.callAccounts(1);
+                            }else if($scope.innerSync){
+                                $scope.callAccounts(1);
                             }else{
                                 $scope.callAccounts(0);
                             }
@@ -550,7 +450,7 @@ angular.module('starter.controllers', [])
                         }
                 });
 
-                $scope.callAccounts = function(updateTb){
+                $scope.callAccounts = function(updateTb) {
                     if(updateTb == 1){
                         
                         $http.get(queryUrl,$rootScope.headers).then(function (accounts) {
@@ -569,8 +469,8 @@ angular.module('starter.controllers', [])
                                     var data = [];
                                     var rowArgs = [];
                                     angular.forEach(temparray, function (el, index) {
-                                        console.log('-----acounts-------');
-                                        console.log(el)
+                                       // console.log('-----acounts-------');
+                                        //console.log(el)
                                         rowArgs.push("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                                         data.push(el.AccountId);
                                         data.push(el.AccountNumber);
@@ -606,7 +506,7 @@ angular.module('starter.controllers', [])
                                     $cordovaSQLite.execute($rootScope.DB, query, data).then(function (result) {
                                          $nCnt = $nCnt + chunk;
                                         if ($nCnt >= $scope.accountData.length) {
-                                            console.log(result);
+                                           // console.log(result);
                                             $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Accounts" and acId = '+UserId+'),"Accounts","'+currentDate+'","'+curTimeLog+'",0,'+UserId+')');
                                             if ($scope.innerSync) {
                                                 $rootScope.syncObj[4].sync = 'done';
@@ -617,7 +517,6 @@ angular.module('starter.controllers', [])
                                                 $scope.loadOrderhistory();
                                             }
 
-                                            
                                         }
                                       
                                     }, function (err) {
@@ -629,10 +528,9 @@ angular.module('starter.controllers', [])
                             },
                             function (error) {
                                 $scope.syncError(error);
+                                $rootScope.syncUserObj[0].sync = false;
                             });
-                    }
-                    else
-                    {
+                    } else {
                         if ($scope.innerSync) {
                             $rootScope.syncObj[4].sync = 'done';
                             $scope.loadOrderhistory();
@@ -640,13 +538,9 @@ angular.module('starter.controllers', [])
                             $rootScope.syncUserObj[0].sync = 'done';
                             $ionicLoading.hide();
                             $scope.loadOrderhistory();
-
-                        }
-                                
-                    }
-                
+                        }                                
+                    }                
                 }
-
             }    
 
 
@@ -655,10 +549,11 @@ angular.module('starter.controllers', [])
         $scope.loadOrderhistory = function () {
             if ($scope.innerSync) {
                 $rootScope.syncObj[5].sync = true;
-            }            
-            $rootScope.syncUserObj[1].sync = true;
-
-            console.log('Orderhistory');
+            }else{            
+            	$rootScope.syncUserObj[1].sync = true;
+            }
+            		
+           // console.log('Orderhistory');
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
             var UserId = $rootScope.mUser.Id;
@@ -674,8 +569,10 @@ angular.module('starter.controllers', [])
             $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Orderhistory" and acId = '+UserId)
                 .then(function (result) {
                     if(result.rows.length > 0){
-                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 10){
+                        if((Math.abs(curTimeLog - result.rows.item(0).insertedLog) / 3600000) > 2  || $scope.innerSync == true){
                            $scope.callOrderhistory(1);
+                        }else if($scope.innerSync){
+                            $scope.callOrderhistory(1);
                         }else{
                             $scope.callOrderhistory(0);
                         }
@@ -686,8 +583,11 @@ angular.module('starter.controllers', [])
 
 
             var cnt = 0;
-            $scope.callOrderhistory = function(updateTb){
+            $scope.callOrderhistory = function(updateTb) {
                 if(updateTb == 1){
+					
+					$cordovaSQLite.execute($rootScope.DB, 'DELETE from syncLog where apiName = "Orderhistory" ');
+
                     $cordovaSQLite.execute($rootScope.DB, 'DROP TABLE order_history');
                     $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER, orderHistoryNumericDate INTEGER)');
 
@@ -737,7 +637,10 @@ angular.module('starter.controllers', [])
                                         $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Orderhistory" and acId = '+UserId+'),"Orderhistory","'+currentDate+'","'+curTimeLog+'",0,'+UserId+')');
                                         if ($scope.innerSync) {
                                             $rootScope.syncObj[5].sync = 'done';
+                                            $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+                                            $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
                                             $ionicLoading.hide();
+                                            
                                         }else{
                                             $rootScope.syncUserObj[1].sync = 'done';
                                             $ionicLoading.hide();
@@ -751,10 +654,13 @@ angular.module('starter.controllers', [])
                                     console.log("Error on saving: " + err.message);
                                 });
                             }
+                            var sDate = new Date().getTime();
+                            window.localStorage.setItem("AccountSyncDate",sDate);
 
                         },
                         function (error) {
                             $scope.syncError(error);
+                            $rootScope.syncUserObj[1].sync = false;
                         });
                 }else{
                     if ($scope.innerSync) {
@@ -819,11 +725,12 @@ angular.module('starter.controllers', [])
                             $rootScope.basketBadge = $rootScope.basketList.length;
                         });
             }else{
-                     $ionicLoading.hide();
-                     $rootScope.basketBadge = 0;
+                 $ionicLoading.hide();
+                 $rootScope.basketBadge = 0;
             }
             
         });
+
         $scope.$on('syncStart', function (event, args) {
             $scope.innerSync = args.innerSync;
             if ($cordovaNetwork.isOnline()) {
@@ -834,13 +741,13 @@ angular.module('starter.controllers', [])
                         buttons: [
                             {
                                 text: 'Cancel'
-                    },
+                    		},
                             {
                                 text: 'Continue',
                                 type: 'button-positive',
                                 onTap: function (e) {
-                                    $scope.startinnerSyncing();
-                                }
+                                $scope.startinnerSyncing();
+                            }
                       }
                     ]
                     });
@@ -861,18 +768,18 @@ angular.module('starter.controllers', [])
             if ($cordovaNetwork.getNetwork() != "wifi") {
                 $rootScope.popup = $ionicPopup.show({
                     title: '<h4 class="positive">No Wifi Network</h4>',
-                    template: 'You are on Mobile Data Switch to Wifi or Mobile Data may casue additional charges.',
+                    template: 'You are on Mobile Data Switch to Wifi or Mobile Data may cause additional charges.',
                     cssClass: 'internetError',
                     buttons: [
                         {
                             text: 'Cancel'
-                    },
+                        },
                         {
                             text: 'Continue',
                             type: 'button-positive',
                             onTap: function (e) {
                                 $scope.loadContacts();
-                            }
+                        }
                       }
                     ]
                 });
@@ -890,6 +797,7 @@ angular.module('starter.controllers', [])
             });
         }
     })
+
 
 .controller('syncCtrl', function ($scope, $state, $rootScope) {
     root = $rootScope;
@@ -910,16 +818,52 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('syncUserCtrl', function ($scope, $state, $rootScope, $ionicPopup, $ionicLoading, $filter, $cordovaSQLite, $cordovaKeyboard, $ionicHistory) {
+.controller('syncUserCtrl', function ($scope, $state, $rootScope,$ionicLoading, $ionicPlatform, $cordovaNetwork, $ionicPopup) {
     root = $rootScope;
     scope = $scope;
     $ionicLoading.hide();
     angular.forEach($rootScope.syncUserObj, function (el, index) {
         el.sync = false;
     });
-    $scope.loadAccounts();
+
+
+    $scope.handleUserClick = function () {
+
+			if ($cordovaNetwork.isOnline()) {
+
+					if ($cordovaNetwork.getNetwork() != "wifi") {
+		                $rootScope.popup = $ionicPopup.show({
+		                    title: '<h4 class="positive">No Wifi Network</h4>',
+		                    template: 'You are on Mobile Data Switch to Wifi or Mobile Data may cause additional charges.',
+		                    cssClass: 'internetError',
+		                    buttons: [
+		                        {
+		                            text: 'Cancel'
+		                    },
+		                        {
+		                            text: 'Continue',
+		                            type: 'button-positive',
+		                            onTap: function (e) {
+		                                $scope.loadAccounts();
+		                            }
+		                      }
+		                    ]
+		                });
+		            } else {
+		                $scope.loadAccounts();
+		            }
+                
+            } else {
+                $rootScope.popup = $ionicPopup.alert({
+                    title: '<h4 class="positive">No Internet Connection</h4>',
+                    template: 'Sorry, no Internet Connectivity detected. Please reconnect and try again.'
+                });
+            }
+
+    };
    
 })
+
 .controller('loginCtrl', function ($scope, $state, $rootScope, $ionicPopup, $ionicLoading, $filter, $cordovaSQLite, $cordovaKeyboard, $ionicHistory) {
 
 
@@ -934,7 +878,7 @@ angular.module('starter.controllers', [])
     $rootScope.basketBadge = 0;
 
     $scope.openLink = function (weblink) {
-        console.log(weblink);
+      //  console.log(weblink);
         window.open(weblink, '_system');
         return false;
     }
@@ -959,7 +903,7 @@ angular.module('starter.controllers', [])
             .then(
                 function (result) {
                     if (result.rows.length > 0) {
-                           /* var User = result.rows.item(0);
+                            var User = result.rows.item(0);
                             $ionicHistory.clearHistory();
                             $ionicHistory.clearCache();
                             $rootScope.mUser = User;
@@ -968,17 +912,17 @@ angular.module('starter.controllers', [])
                             $rootScope.mAccount = "";
                            
 
-                                var UserId = $rootScope.mUser.Id;
+                                /*var UserId = $rootScope.mUser.Id;
                                 $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
                                     .then(function (result) {
-                                        if(result.rows.length > 0){
+                                        if(result.rows.length > 1){
                                             for(var pt=0;pt<result.rows.length;pt++){
                                                 if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 10){
                                                     $state.go('syncuserdata', {
                                                             location: false
                                                         });
-                                                }else
-                                                {
+                                                }else{
+
                                                      $state.go('app.tab.accounts', {
                                                             location: false
                                                      });
@@ -997,7 +941,7 @@ angular.module('starter.controllers', [])
                         //if (hash == User.Password) {
                         
                         var User = result.rows.item(0);
-                        if (bcrypt.compareSync(Password, User.Password))
+                        if (bcrypt.compareSync(Password, User.Password) == true && (User.CustType == 3 || User.CustType == 7) )
                         {
                             $ionicLoading.hide();
                             $cordovaKeyboard.close();
@@ -1012,14 +956,13 @@ angular.module('starter.controllers', [])
                              var UserId = $rootScope.mUser.Id;
                                 $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
                                     .then(function (result) {
-                                        if(result.rows.length > 0){
+                                        if(result.rows.length > 1){
                                             for(var pt=0;pt<result.rows.length;pt++){
-                                                if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 10){
+                                                if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 2){
                                                     $state.go('syncuserdata', {
                                                             location: false
                                                         });
-                                                }else
-                                                {
+                                                }else{
                                                      $state.go('app.tab.accounts', {
                                                             location: false
                                                      });
@@ -1033,7 +976,14 @@ angular.module('starter.controllers', [])
 
                                         }
                                 });
-
+						}else if(User.CustType != 3 && User.CustType != 7){
+							$ionicLoading.hide();
+                            $cordovaKeyboard.close();
+                            
+                            $rootScope.popup = $ionicPopup.alert({
+                                title: 'No Account',
+                                template: 'For this Email There is not Account List'
+                            });							
                         } else {
                             $ionicLoading.hide();
                             $cordovaKeyboard.close();
@@ -1063,14 +1013,13 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('appCtrl', function ($scope, $state) {
+.controller('appCtrl', function ($scope, $state) { })
 
-})
+
 
 .controller('tabCtrl', function ($scope, $rootScope) {
     scope = $scope;
     root = $rootScope;
-
 })
 
 .controller('basketCtrl', function ($scope, $rootScope, $ionicLoading, $cordovaSQLite, $filter, $ionicPopup, $state) {
@@ -1321,7 +1270,7 @@ angular.module('starter.controllers', [])
     $scope.accountPage = $state.current.url.replace("/", "");
 })
 
-.controller('accountsCtrl', function ($rootScope, $scope, $ionicLoading, $ionicPopup, $http, $state, $filter, $timeout, $cordovaSQLite, $ionicPlatform, $cordovaKeyboard, $ionicScrollDelegate) {
+.controller('accountsCtrl', function ($rootScope, $scope, $ionicLoading, $ionicPopup, $http, $state, $filter, $timeout, $cordovaSQLite, $ionicPlatform, $cordovaKeyboard, $ionicScrollDelegate, $ionicHistory) {
     scope = $scope;
     root = $rootScope;
     state = $state;
@@ -1338,15 +1287,15 @@ angular.module('starter.controllers', [])
     $scope.noMoreItemsAvailable = false;
     $scope.accountListLength = 0;
     $ionicLoading.hide();
+    $scope.dReady = 0;
+    
+
+	$ionicPlatform.ready(function () {   
+		$scope.dReady = 1;
+	})   
    
-    if(typeof($rootScope.DB) == 'undefined'){
-         $timeout(function() {
-             $scope.loadMore();
-          }, 2000);
-    }
    
      $scope.loadMore = function() {
-        //console.log('loadAccounts');
             if($scope.data.accountSearch != ''){
                 $scope.accountFilter($scope.data.accountSearch);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -1515,6 +1464,11 @@ angular.module('starter.controllers', [])
         $rootScope.mAccount = account;
          window.localStorage.setItem("mAccount", JSON.stringify($rootScope.mAccount));
 
+
+		if(account.AccountId != oldAccount.AccountId ){
+			$ionicHistory.clearCache();
+		}
+
         if($rootScope.basketBadge > 0 && account.AccountId != oldAccount.AccountId ){
               var confirmPopup = $ionicPopup.confirm({
                  title: 'Switch Basket',
@@ -1588,6 +1542,7 @@ angular.module('starter.controllers', [])
 })
 
 .controller('orderlistCtrl', function ($scope, $rootScope, $filter, $ionicLoading, $cordovaSQLite, $ionicPopup, $cordovaKeyboard) {
+
     scope = $scope;
     $scope.bydate = true;
     $scope.byproduct = false;
@@ -1608,6 +1563,8 @@ angular.module('starter.controllers', [])
     $scope.orderhListLength = 0;
     $scope.scroll = true;
     $scope.lastDate = '';
+    
+   
 
     /* if ($rootScope.mAccount)
      {
@@ -1648,8 +1605,6 @@ angular.module('starter.controllers', [])
 
         }
 
-
-
     }
 
     $scope.loadMoreOrder = function(searchtext) {
@@ -1657,7 +1612,6 @@ angular.module('starter.controllers', [])
         if($scope.pageNum > 0){
            pageOffset =  $scope.pageNum * $scope.limitData;    
         }
-        //console.log('SELECT * FROM order_history WHERE (prodTitle LIKE "'+$scope.searchtext+'%" OR prodTitle LIKE  "%'+$scope.searchtext+'%") and accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ORDER BY orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset);
 
         $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM order_history WHERE (prodTitle LIKE "'+$scope.searchtext+'%" OR prodTitle LIKE  "%'+$scope.searchtext+'%") and accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ORDER BY orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
             .then(
@@ -1665,25 +1619,21 @@ angular.module('starter.controllers', [])
                     $ionicLoading.hide();
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                     if (result.rows.length > 0) {
-                        console.log(result);
+                       // console.log(result);
                         
                         for (var i = 0; i < result.rows.length; i++) {
-                            //var arVal = [{'date':result.rows.item(i).orderHistoryDate,'value':result.rows.item(i)}];
 
                             if ($scope.checkDate(result.rows.item(i).orderHistoryDate))
                             {   
                                 $rootScope.searchorderList.push({'date':result.rows.item(i).orderHistoryDate,'order':[result.rows.item(i)]});    
                                 cnt++;
-                            }
-                            else
-                            {
+                            } else {
                                 $rootScope.searchorderList[cnt].order.push(result.rows.item(i));
                             }
                             
                         }
                        $scope.pageNum = $scope.pageNum + 1;
                     } else {
-                        //$rootScope.orderhList = [];
                         isloadData = false;
                     }
                 },
@@ -1732,9 +1682,9 @@ angular.module('starter.controllers', [])
 
 
             if(len > 3){
-                var fRdate = new Date("01/01/"+$scope.data.monthfilter);
+                var fRdate = new Date($scope.data.monthfilter+"-01-01T00:00:00");
                 fRdate = fRdate.getTime();
-                var tOdate = new Date("12/31/"+$scope.data.monthfilter);
+                var tOdate = new Date($scope.data.monthfilter+"-12-31T00:00:00");
                 tOdate = tOdate.getTime();
                 dateQuery = 'orderHistoryNumericDate>="' + fRdate + '" AND orderHistoryNumericDate<="' + tOdate + '" ';
             }else{
@@ -1746,7 +1696,6 @@ angular.module('starter.controllers', [])
                         $scope.orderhListLength = result.rows.length;
                     })
              }
-             //console.log('SELECT strftime("%Y-%m-%d", orderHistoryDate) histDate FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND '+dateQuery+' group by histDate order by orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset);   
 
             $cordovaSQLite.execute($rootScope.DB, 'SELECT strftime("%Y-%m-%d", orderHistoryDate) histDate FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" AND '+dateQuery+' group by histDate order by orderHistoryNumericDate DESC LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
                 .then(
@@ -2125,8 +2074,8 @@ angular.module('starter.controllers', [])
 
 
         if (!qty) {
-            console.log("qty :");
-            console.log(qty);
+           // console.log("qty :");
+          //  console.log(qty);
             $rootScope.popup = $ionicPopup.alert({
                 title: 'Add quantity ',
                 cssClass: 'popup-error',
