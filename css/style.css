@@ -139,7 +139,7 @@
 
 body {font-family: 'robotoregular'; color: #333333;}
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {font-family: 'robotoregular'; color: #333333;}
-input, button, select, textarea {font-family: 'robotoregular'; }
+input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearance: none !important;}
 .scroll-content .scroll{ max-width: 768px; margin: 0 auto;}
 .full-width .scroll { max-width: none; }
 .container { width: 100%; max-width: 768px; margin: 0 auto;}
