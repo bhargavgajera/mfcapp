@@ -53,16 +53,19 @@ angular.module('starter.controllers', [])
 
 
         $rootScope.logout = function () {
-            $state.go('login', {}, {
-                location: 'replace'
-            });
-            $timeout(function () {
+			//$timeout(function () {
                 window.localStorage.removeItem("mUser");
                 window.localStorage.removeItem("mAccount");
                 $ionicHistory.clearCache();
-                $ionicViewService.clearHistory();
+                //$ionicViewService.clearHistory();
+				$ionicHistory.clearHistory();
                 $rootScope.mUser = null;
-            }, 30);
+           // }, 30);
+		   
+            $state.go('login', {}, {
+                location: 'replace'
+            });
+            
         }
 
         $scope.calcPrice = function () {
@@ -864,7 +867,7 @@ angular.module('starter.controllers', [])
    
 })
 
-.controller('loginCtrl', function ($scope, $state, $rootScope, $ionicPopup, $ionicLoading, $filter, $cordovaSQLite, $cordovaKeyboard, $ionicHistory) {
+.controller('loginCtrl', function ($scope, $state, $rootScope, $ionicPopup, $ionicLoading, $filter, $cordovaSQLite, $cordovaKeyboard, $ionicHistory,$timeout) {
 
 
     root = $rootScope;
@@ -884,15 +887,17 @@ angular.module('starter.controllers', [])
     }
 
     $scope.doLogin = function (form) {
-
+		$ionicLoading.show();
+		
         if (!form.$valid) {
+			$ionicLoading.hide();
             return false;
         }
-
+/*
         $ionicLoading.show({
             template: '<img src="img/loader.gif">'
         });
-
+*/
         var Email = form.email.$modelValue.toLowerCase();
         var Password = form.password.$modelValue;
 
@@ -939,60 +944,66 @@ angular.module('starter.controllers', [])
                         
                         //var hash = bcrypt.hashSync(Password, User.SaltUsed);
                         //if (hash == User.Password) {
-                        
-                        var User = result.rows.item(0);
-                        if (bcrypt.compareSync(Password, User.Password) == true && (User.CustType == 3 || User.CustType == 7) )
-                        {
-                            $ionicLoading.hide();
-                            $cordovaKeyboard.close();
-
-                            $ionicHistory.clearHistory();
-                            $ionicHistory.clearCache();
-                            $rootScope.mUser = User;
-                            window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
-                            window.localStorage.removeItem("mAccount");
-                            $rootScope.mAccount = "";
-                            
-                             var UserId = $rootScope.mUser.Id;
-                                $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
-                                    .then(function (result) {
-                                        if(result.rows.length > 1){
-                                            for(var pt=0;pt<result.rows.length;pt++){
-                                                if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 2){
-                                                    $state.go('syncuserdata', {
-                                                            location: false
-                                                        });
-                                                }else{
-                                                     $state.go('app.tab.accounts', {
-                                                            location: false
-                                                     });
-                                                }
-                                            }
-                                        }else{
-
-                                            $state.go('syncuserdata', {
-                                                location: false
-                                            });
-
-                                        }
-                                });
-						}else if(User.CustType != 3 && User.CustType != 7){
-							$ionicLoading.hide();
-                            $cordovaKeyboard.close();
-                            
-                            $rootScope.popup = $ionicPopup.alert({
-                                title: 'No Account',
-                                template: 'For this Email There is not Account List'
-                            });							
-                        } else {
-                            $ionicLoading.hide();
-                            $cordovaKeyboard.close();
-                            
-                            $rootScope.popup = $ionicPopup.alert({
-                                title: 'Wrong Password',
-                                template: 'Incorrect details please check password'
-                            });
-                       }
+							$timeout(function () {
+								 $scope.validation();           
+							}, 20);
+						
+							$scope.validation = function(){					
+								var User = result.rows.item(0);
+								if (bcrypt.compareSync(Password, User.Password) == true && (User.CustType == 3 || User.CustType == 7) )
+								{
+									$ionicLoading.hide();
+									$cordovaKeyboard.close();
+		
+									$ionicHistory.clearHistory();
+									$ionicHistory.clearCache();
+									$rootScope.mUser = User;
+									window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
+									window.localStorage.removeItem("mAccount");
+									$rootScope.mAccount = "";
+									
+									 var UserId = $rootScope.mUser.Id;
+										$cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
+											.then(function (result) {
+												if(result.rows.length > 1){
+													for(var pt=0;pt<result.rows.length;pt++){
+														if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 2){
+															$state.go('syncuserdata', {
+																	location: false
+																});
+														}else{
+															 $state.go('app.tab.accounts', {
+																	location: false
+															 });
+														}
+													}
+												}else{
+		
+													$state.go('syncuserdata', {
+														location: false
+													});
+		
+												}
+										});
+								}else if(User.CustType != 3 && User.CustType != 7){
+									$ionicLoading.hide();
+									$cordovaKeyboard.close();
+									
+									$rootScope.popup = $ionicPopup.alert({
+										title: 'No Account',
+										template: 'For this Email There is not Account List'
+									});							
+								} else {
+									$ionicLoading.hide();
+									$cordovaKeyboard.close();
+									
+									$rootScope.popup = $ionicPopup.alert({
+										title: 'Wrong Password',
+										template: 'Incorrect details please check password'
+									});
+							   }
+						}
+					   
                     } else {
                         $ionicLoading.hide();
                         $rootScope.popup = $ionicPopup.alert({
