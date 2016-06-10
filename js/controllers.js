@@ -887,7 +887,10 @@ angular.module('starter.controllers', [])
     }
 
     $scope.doLogin = function (form) {
-		$ionicLoading.show();
+		//$ionicLoading.show();
+		$ionicLoading.show({
+            template: '<img src="img/loader.gif">'
+        });
 		
         if (!form.$valid) {
 			$ionicLoading.hide();
