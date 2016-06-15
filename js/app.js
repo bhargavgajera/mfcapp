@@ -15,14 +15,25 @@ App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen) {
     
      //$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
-	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false}]; 
-	$rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Orderhistory',sync:false}]; 
+	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Related Product',sync:false}]; 
+	$rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Order History',sync:false}]; 
 
     if (window.localStorage.getItem("mUser") != "undefined") {
         $rootScope.mUser = JSON.parse(window.localStorage.getItem("mUser"));
     }
 
-    if (window.localStorage.getItem("mAccount") != "undefined") {
+    if (window.localStorage.getItem("mAccount") == "undefined" || window.localStorage.getItem("mAccount") == null) {
+        $rootScope.pageTitle = "No Account selected";
+        $rootScope.reOrderUrl = "";
+        $rootScope.accountUrl = "";
+        $rootScope.invoiceUrl = "";
+        $rootScope.deliveryUrl = "";
+    }
+    else
+    {
+        $rootScope.accountUrl = "#/app/tab/detail";
+        $rootScope.invoiceUrl = "#/app/tab/invoice";
+        $rootScope.deliveryUrl = "#/app/tab/delivery";
         $rootScope.mAccount = JSON.parse(window.localStorage.getItem("mAccount"));
     }
     

@@ -242,6 +242,8 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .accounts-page .list-wrapper:last-child .item { border-bottom: none;}
 .myaccount-page .item i.button {height: 30px;line-height: 30px;width: 30px;top: 50%;-webkit-transform: translateY(-50%);-ms-transform: translateY(-50%);transform: translateY(-50%);}
 .myaccount-page .item i.button:before { margin-top: 0px;}
+.myaccount-page .item.disabled { opacity: 0.5;}
+.myaccount-page .item.disabled .ico-rightarrow{ display: none;}
 
 .accounts-page .list-wrapper .alphabet { margin-top: -1px; padding-top: 40px; border-bottom-color: #0065A4;  font-family: 'robotobold';}
 .accounts-page .list-wrapper:first-child .alphabet { padding-top: 16px;}
@@ -269,9 +271,10 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 
 .sub-search {height: 48px;}
 .sub-search .container { padding: 0px 10px;}
-.sub-search .item-input-wrapper { max-width:300px; background-color:#fff; }
+.sub-search .item-input-wrapper { max-width:300px; background-color:#fff; position: relative;}
 .sub-search .search-form {display: -webkit-box;display: -webkit-flex;display: -ms-flexbox;display: flex; }
 .sub-search .button  { display: inline-block;}
+.closebtn { position: absolute; right: 10px;}
 .price-toggle { width: 200px;  text-align: right; position: absolute; right: 10px; top: 0;}
 .price-toggle p{ display: inline-block; vertical-align: middle; margin: 0px 5px; font-size: 16px;}
 .price-toggle .toggle {padding:0px; display: inline-block; vertical-align: middle; margin: 0px;}
@@ -302,8 +305,9 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .order-page .item .content { width: 70%; display: inline-block;vertical-align: middle; padding-right:10px; }
 .order-page .item-option .item-select select{ width:200px;  }
 .order-page .order-wrapper .item { width: 100%;}
-.order-page .byproduct .item-option label { width: 250px; display: inline-block; padding: 0px; }
+.order-page .byproduct .item-option label { width: 250px; display: inline-block; padding: 0px;  position: relative;}
 .order-page .byproduct .item-option label input { width: 100%;border: 1px solid #ccc; padding: 0 15px; box-sizing: border-box; border-radius: 4px;}
+.order-page .byproduct .item-option .closebtn { right: 5px; top: 50%; transform: translateY(-50%);-webkit-transform: translateY(-50%);-mon-transform: translateY(-50%); font-size: 16px;}
 .order-page .byproduct .item-option button { display: inline-block; min-height: 35px; min-width: 35px; height: 35px; line-height: 35px;}
 .order-page .byproduct .item-option button i:before { line-height: 28px;}
 .order-page .order-wrapper .item:first-child {border-top: 1px solid #f0f0f0 ;}

@@ -47,6 +47,9 @@
                 <form ng-submit="searchOrder(data.searchData)" class="search-form" novalidate>
                     <label class="item-input-wrapper">
                         <input type="search" placeholder="Search By Product" ng-model="data.searchData" name="searchdata" ng-disabled="orderhList.length < 1">
+                        <a ng-if="data.searchData.length" on-tap="clearSearch()"
+                            class="closebtn button button-small button-clear ion-android-close">
+                        </a>
                     </label>
                     <button class="button button-positive" type="submit"><i class="icon ico-search" ng-disabled="orderhList.length < 1"></i></button>
                 </form>

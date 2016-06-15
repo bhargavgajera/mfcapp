@@ -53,18 +53,19 @@ angular.module('starter.controllers', [])
 
 
         $rootScope.logout = function () {
-			//$timeout(function () {
-                window.localStorage.removeItem("mUser");
-                window.localStorage.removeItem("mAccount");
-                $ionicHistory.clearCache();
-                //$ionicViewService.clearHistory();
-				$ionicHistory.clearHistory();
-                $rootScope.mUser = null;
-           // }, 30);
 		   
             $state.go('login', {}, {
                 location: 'replace'
             });
+            $timeout(function () {
+                window.localStorage.removeItem("mUser");
+                window.localStorage.removeItem("mAccount");
+                $ionicHistory.clearCache();
+                //$ionicViewService.clearHistory();
+                $ionicHistory.clearHistory();
+                $rootScope.mUser = null;
+            }, 30);
+
             
         }
 
@@ -72,6 +73,7 @@ angular.module('starter.controllers', [])
             var price;
             $rootScope.totalPrice = 0;
             $rootScope.totalVat = 0;
+            $rootScope.basketBadge = 0;
 
             angular.forEach($rootScope.priceData, function (el, index) {
                 if (el.vat == "NaN") {
@@ -87,6 +89,7 @@ angular.module('starter.controllers', [])
                 }
                 $rootScope.totalPrice = $rootScope.totalPrice + price;
                 $rootScope.totalVat = $rootScope.totalVat + (vat - price);
+                $rootScope.basketBadge = $rootScope.basketBadge + el.qty;
             });
 
         }
@@ -111,13 +114,13 @@ angular.module('starter.controllers', [])
             });
         }
 
-
+        
         $scope.syncError = function (error) {
             $ionicLoading.hide();
             $rootScope.syncButton = false;
             $rootScope.popup = $ionicPopup.alert({
                 title: '<h4 class="positive">Data syncing failed</h4>',
-                template: 'data synicing failed, please check you internet connection and try again'
+                template: 'Please check your internet connection and try again'
             });
 
             angular.forEach($rootScope.syncObj, function (el, index) {
@@ -249,7 +252,7 @@ angular.module('starter.controllers', [])
 
 
                     if ($scope.innerSync) {
-                        $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Orderhistory',sync:false});
+                        $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
                     }
                     $rootScope.syncObj[0].sync = 'done';
                     $scope.loadProducts();
@@ -432,10 +435,14 @@ angular.module('starter.controllers', [])
 	            	
                 if ($rootScope.mUser.CustType == 7){
                    var ID = $rootScope.mUser.RelatedAccountNumber;
-                   queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?AccountID='+ID;
+                   if(ID != ""){
+                        queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?AccountID='+ID;
+                   }
                 } else if($rootScope.mUser.CustType == 3){
                     var ID = $rootScope.mUser.CustRepTerritory;
-                    queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?TerritoryID='+ID;
+                    if(ID != ""){
+                        queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/Accounts?TerritoryID='+ID;
+                    }
                 }
                 
                 $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Accounts" and acId = '+UserId)
@@ -454,7 +461,7 @@ angular.module('starter.controllers', [])
                 });
 
                 $scope.callAccounts = function(updateTb) {
-                    if(updateTb == 1){
+                    if(updateTb == 1 && queryUrl != ""){
                         
                         $http.get(queryUrl,$rootScope.headers).then(function (accounts) {
                                $scope.accountData = accounts.data;
@@ -557,16 +564,21 @@ angular.module('starter.controllers', [])
             }
             		
            // console.log('Orderhistory');
+            var queryUrl = '';
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
             var UserId = $rootScope.mUser.Id;
             
             if ($rootScope.mUser.CustType == 7){
                 var ID = $rootScope.mUser.RelatedAccountNumber;
-                queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/OrderHistory?AccountID='+ID;
+                if(ID != ""){
+                    queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/OrderHistory?AccountID='+ID;
+                }
             } else if($rootScope.mUser.CustType == 3){
                 var ID = $rootScope.mUser.CustRepTerritory;
-                queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/OrderHistory?TerritoryID='+ID;
+                if(ID != ""){
+                    queryUrl = 'http://mfcapi.radiatordedicated.co.uk/api/OrderHistory?TerritoryID='+ID;
+                }
             }
 
             $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where apiName="Orderhistory" and acId = '+UserId)
@@ -587,7 +599,7 @@ angular.module('starter.controllers', [])
 
             var cnt = 0;
             $scope.callOrderhistory = function(updateTb) {
-                if(updateTb == 1){
+                if(updateTb == 1 && queryUrl != ""){
 					
 					$cordovaSQLite.execute($rootScope.DB, 'DELETE from syncLog where apiName = "Orderhistory" ');
 
@@ -649,7 +661,10 @@ angular.module('starter.controllers', [])
                                             $ionicLoading.hide();
                                             $state.go('app.tab.accounts', {
                                                 location: false
-                                            });                                            
+                                            });    
+                                            $timeout(function () {                                                        
+                                                $ionicHistory.clearHistory();                                            
+                                            }, 30);                                                                                    
                                         }
 
                                     }
@@ -677,6 +692,9 @@ angular.module('starter.controllers', [])
                         $state.go('app.tab.accounts', {
                             location: false
                         });
+                        $timeout(function () {                                                        
+                            $ionicHistory.clearHistory();                                            
+                        }, 30);
                     }
 
                 }
@@ -711,12 +729,15 @@ angular.module('starter.controllers', [])
         $rootScope.$on('updateBasket', function (event) {
             $rootScope.basketList = [];
             $rootScope.priceData = [];
+            $rootScope.basketBadge = 0;
             if($rootScope.mAccount != null && $rootScope.mAccount !=  ''){
                 $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM basket WHERE UserID = '+$rootScope.mAccount.AccountId)
                     .then(
                         function (result) {
                             for (var i = 0; i < result.rows.length; i++) {
                                 $rootScope.basketList.push(result.rows.item(i));
+                                
+                                $rootScope.basketBadge = $rootScope.basketBadge + $rootScope.basketList[i].qnt;
                                 $rootScope.priceData[i] = {};
                                 $rootScope.priceData[i].qty = $rootScope.basketList[i].qnt;
                                 $rootScope.priceData[i].uprice = $rootScope.basketList[i].PriceExVat;
@@ -725,7 +746,7 @@ angular.module('starter.controllers', [])
                             }
                             $scope.calcPrice();
                             $ionicLoading.hide();
-                            $rootScope.basketBadge = $rootScope.basketList.length;
+                           // $rootScope.basketBadge = $rootScope.basketList.length;
                         });
             }else{
                  $ionicLoading.hide();
@@ -735,12 +756,20 @@ angular.module('starter.controllers', [])
         });
 
         $scope.$on('syncStart', function (event, args) {
+        var currentDate = new Date();
+        var curTimeLog = currentDate.getTime(); 
+        var lateMessage = "Everything is up to date. ";
+    
+            if((Math.abs(curTimeLog - window.localStorage.getItem('syncDate')) / 3600000) > 2){
+                lateMessage = "";
+            }
+
             $scope.innerSync = args.innerSync;
             if ($cordovaNetwork.isOnline()) {
                 if ($scope.innerSync) {
                     $rootScope.popup = $ionicPopup.show({
                         title: '<h4 class="positive">Full sync takes time</h4>',
-                        template: 'Full sync takes time do you want to continue the sync proccess ?',
+                        template: lateMessage+'Do you want to continue the sync proccess ?',
                         buttons: [
                             {
                                 text: 'Cancel'
@@ -760,7 +789,7 @@ angular.module('starter.controllers', [])
             } else {
                 $rootScope.popup = $ionicPopup.alert({
                     title: '<h4 class="positive">No Internet Connection</h4>',
-                    template: 'Sorry, no Internet Connectivity detected. Please reconnect and try again.'
+                    template: 'Sorry, Internet Connectivity not detected. Please reconnect and try again.'
                 });
             }
         });
@@ -859,7 +888,7 @@ angular.module('starter.controllers', [])
             } else {
                 $rootScope.popup = $ionicPopup.alert({
                     title: '<h4 class="positive">No Internet Connection</h4>',
-                    template: 'Sorry, no Internet Connectivity detected. Please reconnect and try again.'
+                    template: 'Sorry, Internet Connectivity not detected. Please reconnect and try again.'
                 });
             }
 
@@ -886,21 +915,17 @@ angular.module('starter.controllers', [])
         return false;
     }
 
+
+
     $scope.doLogin = function (form) {
-		//$ionicLoading.show();
 		$ionicLoading.show({
             template: '<img src="img/loader.gif">'
-        });
-		
+        });        
+
         if (!form.$valid) {
 			$ionicLoading.hide();
             return false;
         }
-/*
-        $ionicLoading.show({
-            template: '<img src="img/loader.gif">'
-        });
-*/
         var Email = form.email.$modelValue.toLowerCase();
         var Password = form.password.$modelValue;
 
@@ -918,33 +943,7 @@ angular.module('starter.controllers', [])
                             window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
                             window.localStorage.removeItem("mAccount");
                             $rootScope.mAccount = "";
-                           
-
-                                /*var UserId = $rootScope.mUser.Id;
-                                $cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
-                                    .then(function (result) {
-                                        if(result.rows.length > 1){
-                                            for(var pt=0;pt<result.rows.length;pt++){
-                                                if((Math.abs(curTimeLog - result.rows.item(pt).insertedLog) / 3600000) > 10){
-                                                    $state.go('syncuserdata', {
-                                                            location: false
-                                                        });
-                                                }else{
-
-                                                     $state.go('app.tab.accounts', {
-                                                            location: false
-                                                     });
-                                                }
-                                            }
-                                        }else{
-
-                                            $state.go('syncuserdata', {
-                                                location: false
-                                            });
-
-                                        }
-                                });*/
-                        
+                                                 
                         //var hash = bcrypt.hashSync(Password, User.SaltUsed);
                         //if (hash == User.Password) {
 							$timeout(function () {
@@ -980,6 +979,11 @@ angular.module('starter.controllers', [])
 															 });
 														}
 													}
+                                                    $timeout(function () {                                                        
+                                                        $ionicHistory.clearHistory();                                            
+                                                    }, 30);
+
+
 												}else{
 		
 													$state.go('syncuserdata', {
@@ -1002,7 +1006,7 @@ angular.module('starter.controllers', [])
 									
 									$rootScope.popup = $ionicPopup.alert({
 										title: 'Wrong Password',
-										template: 'Incorrect details please check password'
+										template: 'Please check password'
 									});
 							   }
 						}
@@ -1010,8 +1014,8 @@ angular.module('starter.controllers', [])
                     } else {
                         $ionicLoading.hide();
                         $rootScope.popup = $ionicPopup.alert({
-                            title: 'Error',
-                            template: 'Incorrect details please check email and password'
+                            title: 'Incorrect Credentials',
+                            template: 'Please check email and password'
                         });
                     }
                 },
@@ -1213,6 +1217,15 @@ angular.module('starter.controllers', [])
     $scope.productSearch = '';
     $scope.searchproductList;
     $scope.searchWordList = '';
+
+
+$scope.$on('$ionicView.enter', function() {
+    document.getElementById("productSearch").focus();
+})    
+
+
+
+
     $cordovaSQLite.execute($rootScope.DB, 'SELECT word FROM searchText order by ID DESC LIMIT 5').then(function (result) {
             
             $scope.searchWordList = [];
@@ -1233,6 +1246,11 @@ angular.module('starter.controllers', [])
             });
             console.log("Error on loading: " + error.message);
         });    
+
+
+    $scope.clearSearch = function(){
+        $scope.productSearch = "";
+    }
 
     $scope.searchProduct = function (searchtext) {
         if (searchtext != '') {
@@ -1274,7 +1292,31 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService) {
+.controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService, $cordovaSQLite) {
+    scope = $scope;
+    $scope.selAccount = 0;
+    //$scope.searchorderLength = "";
+
+    $scope.$on('$ionicView.enter', function() {
+        if($rootScope.mAccount != "" && $rootScope.mAccount != null){
+
+
+
+
+            $rootScope.pageTitle = '('+$rootScope.mAccount.AccountNumber+') '+$rootScope.mAccount.AccountCompany;
+            $scope.selAccount = 1;
+            if($rootScope.reOrderLength > 0){
+                $scope.reOrderUrl = "#/app/tab/orderlist";
+            }
+
+            $rootScope.accountUrl = "#/app/tab/detail";
+            $rootScope.invoiceUrl = "#/app/tab/invoice";
+            $rootScope.deliveryUrl = "#/app/tab/delivery";
+
+
+        }
+    })    
+    
 
 })
 
@@ -1302,13 +1344,22 @@ angular.module('starter.controllers', [])
     $scope.accountListLength = 0;
     $ionicLoading.hide();
     $scope.dReady = 0;
+    ionicHistory = $ionicHistory;
+    $rootScope.reOrderLength = 0;
     
 
 	$ionicPlatform.ready(function () {   
 		$scope.dReady = 1;
 	})   
+    
+
+    $scope.clearSearch = function(){
+        $scope.data.accountSearch = "";
+    }
+
    
-   
+    //console.log($ionicHistory.backView());
+
      $scope.loadMore = function() {
             if($scope.data.accountSearch != ''){
                 $scope.accountFilter($scope.data.accountSearch);
@@ -1479,24 +1530,24 @@ angular.module('starter.controllers', [])
          window.localStorage.setItem("mAccount", JSON.stringify($rootScope.mAccount));
 
 
-		if(account.AccountId != oldAccount.AccountId ){
+		if($rootScope.mAccount != null && account.AccountId != oldAccount.AccountId ){
 			$ionicHistory.clearCache();
 		}
 
-        if($rootScope.basketBadge > 0 && account.AccountId != oldAccount.AccountId ){
+        if($rootScope.basketBadge > 0 && account.AccountId != oldAccount.AccountId && $rootScope.mAccount != null){
               var confirmPopup = $ionicPopup.confirm({
                  title: 'Switch Basket',
-                 template: 'Are you want to switch basket from '+oldAccount.AccountCompany,
+                 template: 'Carry with same basket',
                  scope: $scope,
                   buttons: [
                     {  
-                        text: 'Ignore',
+                        text: 'No',
                         onTap: function(e) {
                              $rootScope.$emit('updateBasket');
                         }
                      },
                     {
-                        text: '<b>Continue</b>',
+                        text: '<b>Yes</b>',
                         type: 'button-positive',
                         onTap: function(e) {
                             $scope.SwitchFrom(account.AccountId,oldAccount.AccountId);
@@ -1506,18 +1557,25 @@ angular.module('starter.controllers', [])
               });
 
               confirmPopup.then(function(res) {
-                    $state.go('app.tab.myaccount', {
-                        location: false
-                    });                 
+                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
+                        $rootScope.reOrderLength = result.rows.item(0)['count(*)'];
+                        $state.go('app.tab.myaccount', {
+                            location: false
+                        });
+                    });                
               });            
         }else{
                 $rootScope.$emit('updateBasket');
                 $timeout(function () {
-                    $state.go('app.tab.myaccount', {
-                        location: false
+                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
+                        $rootScope.reOrderLength = result.rows.item(0)['count(*)'];
+                        $state.go('app.tab.myaccount', {
+                            location: false
+                        });
                     });
+                    
 
-                }, 500);
+                }, 20);
 
         }
 
@@ -1588,6 +1646,9 @@ angular.module('starter.controllers', [])
         template: '<img src="img/loader.gif">'
     });
 
+    $scope.clearSearch = function(){
+        $scope.data.searchData = "";
+    }
 
 
     $scope.searchOrder = function (searchtext) {
@@ -1907,7 +1968,7 @@ angular.module('starter.controllers', [])
                         } else {
                             $rootScope.popup = $ionicPopup.alert({
                                 title: 'Error while adding',
-                                template: $scope.NotAvailableProduct.toString() + ' products does not exist in data please find manuly add to basket'
+                                template: $scope.NotAvailableProduct.toString() + ' products does not exist in data please find manually add to basket'
                             });
                         }
                     }
@@ -2085,7 +2146,13 @@ angular.module('starter.controllers', [])
 
     $scope.addtoBasket = function (Id, title, price, qty, StockQty, PriceExVat, PriceIncVat) {
         var Title = ($scope.ParentProduct.ProdTitle) ? $scope.ParentProduct.ProdTitle + ' - ' + title : title;
-
+        if($rootScope.mAccount == null || $rootScope.mAccount == ''){
+            $rootScope.popup = $ionicPopup.alert({
+                title: 'Account not selected',
+                template: 'Please select account for add product into basket'
+            });
+            return false;
+        }
 
         if (!qty) {
            // console.log("qty :");
