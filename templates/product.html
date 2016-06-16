@@ -48,26 +48,30 @@
                 </div>
                 <div class="col col-25">
                     <div class="product-form">
-                        <ul class="list">
-                            <li class="item" ng-if="ConfigurableProduct.length > 0">
-                                <label class="item-select arrow-positive">
-                                    <select ng-model="CurrentConfigurable" ng-options="item.ProdTitle for item in ConfigurableProduct track by item.ProdID" ng-change="swichProduct(CurrentConfigurable.ProdID)">
-                                        <option value="">Please Select</option>
-                                    </select>
-                                </label>
-                            </li>
-                            <li class="item">
-                                <label class="item-select arrow-positive">
-                                   <select ng-model="data.Qty" ng-options="n for n in [] | range:1:product.ProdStockQty" ng-disabled="!product.ProdStockQty"></select>
-                                  
-                                </label>
-                            </li>
-                            <li class="item">
-                                <button class="button button-small  button-positive" ng-disabled="!product.ProdStockQty" ng-click="addtoBasket(product.ProdID,product.ProdTitle,product.ProdUnitPrice,data.Qty,product.ProdStockQty,product.PriceExVat,product.PriceIncVat)">
-                                    Add to Basket
-                                </button>
-                            </li>
-                        </ul>
+                        <form name="productForm" novalidate>
+                            <ul class="list">
+                                <li class="item" ng-if="ConfigurableProduct.length > 0">
+                                    <label class="item-select arrow-positive">
+                                        <select ng-model="CurrentConfigurable" ng-options="item.ProdTitle for item in ConfigurableProduct track by item.ProdID" ng-change="swichProduct(CurrentConfigurable.ProdID)">
+                                            <option value="">Please Select</option>
+                                        </select>
+                                    </label>
+                                </li>
+                                <li class="item">
+                                    <label class="item-select ">
+                                        <input type="number" name="qty" ng-model="data.Qty" ng-pattern="/^[0-9]{1,4}$/" required>
+                                    </label>
+                                    <div class="msg" ng-show="productForm.$submitted || productForm.qty.$touched">
+                                        <div ng-show=" productForm.qty.$error.required  ||  productForm.qty.$error.pattern" class="error-msg"> please enter numeric number</div>
+                                    </div>
+                                </li>
+                                <li class="item">
+                                    <button class="button button-small  button-positive" ng-disabled="!productForm.$valid" ng-click="addtoBasket(product.ProdID,product.ProdTitle,product.ProdUnitPrice,data.Qty,product.ProdStockQty,product.PriceExVat,product.PriceIncVat)">
+                                        Add to Basket
+                                    </button>
+                                </li>
+                            </ul>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -18,6 +18,7 @@ angular.module('starter.controllers', [])
         $scope.childtitle;
         $rootScope.basketBadge = 0;
         $rootScope.syncButton = false;
+        $rootScope.inSyc = false;
         $rootScope.lastsyncDate;
         $scope.innerSync = false;
        /* $rootScope.headers = {headers:{'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer 2WsLcqqcjxJ6HYk5RwJkSYm9KICe1gF_HLVS1BFUnBGXwyCCSTnQLaRaCgrGnez3K6YbEu_XZuimbG3U5JnTJktOumcm5sGk_2BeChMKYtOBM-XMCyiHLGx-TXSgsW6-18g-pH2vi_uX1SrLTkIPBZ4M5qSbwaXm8iKSX_gUgHikVX7XFKeuCfLz2gXhNx2StudtagaHXiKPouWaHVkfRcHm1QV_NowbPuBsn7X4Ns3oGhl-tlnV1CsrwUAMZRxr3-itz4oVbWz3WHlShOvlB4ZwZSp3X8rMLZ5qCD5NmCDpl6lOY94KBsU3d-rpiJrcciEwmOP-SpMQ6RSZr2yIQ1_7HJ6vCfBm9rbNulNqD6KSD1YZjAFdkMz29q1exGeVpSmnH_GCXSGrThkVWCV2FivBmXrI-Ot_kJY0L7yQT86rxXp0OKpbDRNFXyR7WNBU75QVLkR70se9fHmTn0WNZxiU8fpDc-E1pj9p-W8WXtE'}}*/
@@ -61,6 +62,7 @@ angular.module('starter.controllers', [])
                 window.localStorage.removeItem("mUser");
                 window.localStorage.removeItem("mAccount");
                 $ionicHistory.clearCache();
+                $scope.innerSync = false;
                 //$ionicViewService.clearHistory();
                 $ionicHistory.clearHistory();
                 $rootScope.mUser = null;
@@ -217,9 +219,9 @@ angular.module('starter.controllers', [])
 
         $scope.loadContacts = function () {
             if ($scope.innerSync) {
-                ionicLoading.show({
+               /* ionicLoading.show({
                     templateUrl: 'templates/syncpopup.html'
-                });
+                });*/
             }
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
@@ -251,9 +253,7 @@ angular.module('starter.controllers', [])
                     }
 
 
-                    if ($scope.innerSync) {
-                        $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
-                    }
+                    
                     $rootScope.syncObj[0].sync = 'done';
                     $scope.loadProducts();
 
@@ -601,10 +601,10 @@ angular.module('starter.controllers', [])
             $scope.callOrderhistory = function(updateTb) {
                 if(updateTb == 1 && queryUrl != ""){
 					
-					$cordovaSQLite.execute($rootScope.DB, 'DELETE from syncLog where apiName = "Orderhistory" ');
+					//$cordovaSQLite.execute($rootScope.DB, 'DELETE from syncLog where apiName = "Orderhistory" ');
 
-                    $cordovaSQLite.execute($rootScope.DB, 'DROP TABLE order_history');
-                    $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER, orderHistoryNumericDate INTEGER)');
+                    $cordovaSQLite.execute($rootScope.DB, 'DELETE FROM order_history where userId = '+UserId);
+                    //$cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER, orderHistoryNumericDate INTEGER)');
 
 
                     
@@ -621,11 +621,11 @@ angular.module('starter.controllers', [])
                             var i, j, temparray, chunk = 50;
                             for (i = 0, j = $scope.orderHistory.length; i < j; i += chunk) {
                                 temparray = $scope.orderHistory.slice(i, i + chunk);
-                                var query = "INSERT INTO order_history (OrderHistoryID, costPrice, operaCostPrice, unitCost, accountNumber, orderHistoryTitle, prodID, prodTitle, prodPrice, orderHistoryDate, prodHidePrice, prodStockQty, parentTitle, quantity,orderHistoryNumericDate) VALUES ";
+                                var query = "INSERT INTO order_history (OrderHistoryID, costPrice, operaCostPrice, unitCost, accountNumber, orderHistoryTitle, prodID, prodTitle, prodPrice, orderHistoryDate, prodHidePrice, prodStockQty, parentTitle, quantity,orderHistoryNumericDate,userId) VALUES ";
                                 var data = [];
                                 var rowArgs = [];
                                 angular.forEach(temparray, function (el, index) {
-                                    rowArgs.push("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                    rowArgs.push("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                                     data.push(el.OrderHistoryID);
                                     data.push(el.costPrice);
                                     data.push(el.operaCostPrice);
@@ -643,6 +643,7 @@ angular.module('starter.controllers', [])
 
                                     var nDate = new Date(el.orderHistoryDate).getTime();
                                     data.push(nDate);
+                                    data.push(UserId);
                                 });
                                 query += rowArgs.join(", ");
                                var  $nCnt = 0;
@@ -652,8 +653,9 @@ angular.module('starter.controllers', [])
                                         $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO syncLog(ID,apiName,insertedDate,insertedLog,acType,acId) VALUES((select ID from syncLog where apiName = "Orderhistory" and acId = '+UserId+'),"Orderhistory","'+currentDate+'","'+curTimeLog+'",0,'+UserId+')');
                                         if ($scope.innerSync) {
                                             $rootScope.syncObj[5].sync = 'done';
-                                            $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
-                                            $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+                                            $rootScope.inSyc = false;
+                                            //$rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+                                            //$rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
                                             $ionicLoading.hide();
                                             
                                         }else{
@@ -684,8 +686,9 @@ angular.module('starter.controllers', [])
                     if ($scope.innerSync) {
                         $rootScope.syncObj[5].sync = 'done';
                         $ionicLoading.hide();
-                        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
-                        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(5), 1);
+                        $rootScope.inSyc = false;
+                       // $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+                       // $rootScope.syncObj.splice($rootScope.syncObj.indexOf(5), 1);
                     }else{
                         $rootScope.syncUserObj[1].sync = 'done';
                         $ionicLoading.hide();
@@ -766,7 +769,7 @@ angular.module('starter.controllers', [])
 
             $scope.innerSync = args.innerSync;
             if ($cordovaNetwork.isOnline()) {
-                if ($scope.innerSync) {
+                if ($scope.innerSync && $rootScope.inSyc == false) {
                     $rootScope.popup = $ionicPopup.show({
                         title: '<h4 class="positive">Full sync takes time</h4>',
                         template: lateMessage+'Do you want to continue the sync proccess ?',
@@ -810,13 +813,26 @@ angular.module('starter.controllers', [])
                             text: 'Continue',
                             type: 'button-positive',
                             onTap: function (e) {
-                                $scope.loadContacts();
+                                if( ($rootScope.inSyc && $scope.innerSync == true) || $scope.innerSync == false){
+                                    $scope.loadContacts();   
+                                }else{
+                                    $state.go('sync', {
+                                        location: false
+                                    });   
+                                }                             
+                               
                         }
                       }
                     ]
                 });
             } else {
-                $scope.loadContacts();
+                if($rootScope.inSyc  || $scope.innerSync == false ){
+                    $scope.loadContacts();   
+                }else{
+                    $state.go('sync', {
+                        location: false
+                    });   
+                }       
             }
         }
 
@@ -835,14 +851,44 @@ angular.module('starter.controllers', [])
     root = $rootScope;
     scope = $scope;
 
+    $scope.$on('$ionicView.enter', function() {
+        if ($scope.innerSync) {
+            $rootScope.inSyc = true;         
+            $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
+            angular.forEach($rootScope.syncObj, function (el, index) {
+                el.sync = false;
+            });
+
+
+        }
+
+    })    
+
+
+
     $scope.handleClick = function () {
-        $scope.$emit('syncStart', {
-            innerSync: false
-        });
+        if ($scope.innerSync) {
+            $scope.$emit('syncStart', {
+                innerSync: true
+            });
+        }else{
+            $scope.$emit('syncStart', {
+                innerSync: false
+            });
+        }
     };
 
     $scope.gotoLogin = function () {
         $state.go('login', {
+            location: false
+        });
+    }
+    $scope.gotoAccount = function () {
+        $rootScope.inSyc = false;
+        $scope.innerSync =  false;
+        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);           
+        $state.go('app.tab.accounts', {
             location: false
         });
     }

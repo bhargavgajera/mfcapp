@@ -244,6 +244,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .myaccount-page .item i.button:before { margin-top: 0px;}
 .myaccount-page .item.disabled { opacity: 0.5;}
 .myaccount-page .item.disabled .ico-rightarrow{ display: none;}
+.myaccount-page .item.disabled .item-content.activated { background-color: #fff; border-color: #fff;}
 
 .accounts-page .list-wrapper .alphabet { margin-top: -1px; padding-top: 40px; border-bottom-color: #0065A4;  font-family: 'robotobold';}
 .accounts-page .list-wrapper:first-child .alphabet { padding-top: 16px;}

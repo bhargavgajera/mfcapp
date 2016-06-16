@@ -104,6 +104,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER)');
         
          $cordovaSQLite.execute($rootScope.DB,'ALTER TABLE order_history ADD COLUMN orderHistoryNumericDate INTEGER');
+         $cordovaSQLite.execute($rootScope.DB,'ALTER TABLE order_history ADD COLUMN userId INTEGER');
+
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX order_history_idx1 ON order_history(prodID,AccountNumber)');
 		 
