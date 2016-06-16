@@ -413,6 +413,8 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .mainmenu{ border: none;}
     .mainmenu.open-menu { width: 100%;}
     .mainmenu > .list > li > .submenu { top: 44px; -webkit-transform:translateX(0px); -ms-transform:translateX(0px); transform:translateX(0px);}
+	.platform-ios .mainmenu > .list > li > .submenu { top: 64px;}
+	.platform-ios .mainmenu .submenu .bar-header .button { margin-top:0px;}
     .submenu.open-sub { left: 0; z-index: 56; width: 100%;}
     .submenu { width: 100%;}
    .submenu > .list { height: calc(100% - 80px);}
