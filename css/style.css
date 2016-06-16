@@ -477,7 +477,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     
     .product-wrapper { width: 100%; padding: 10px;}
     .product-wrapper .row { display: block; padding: 0px;}
-    .product-wrapper .col-33 {max-width: none;}
+    .product-wrapper .col {max-width: none;}
     .product-wrapper  .product-form { margin: 0 -15px;}
     .product-page .product-image { border: none; width: 100%; text-align: center;}
     .product-page .bar-subheader .title{ display: none;}

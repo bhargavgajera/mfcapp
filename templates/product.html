@@ -16,13 +16,13 @@
     <ion-content class="has-subheader full-width" has-bouncing="true">
         <div class="product-wrapper">
             <div class="row">
-                <div class="col col-33">
+                <div class="col col-25">
                     <div class="product-image">
                         <img ng-src="{{product.Image || 'img/noimage.jpg'}}" ng-if="!isOffline">
                         <img ng-src="{{'img/noimage.jpg'}}" ng-if="isOffline">
                     </div>
                 </div>
-                <div class="col col-33">
+                <div class="col col-50">
                     <h1><span ng-if="ParentProduct.ProdTitle">{{ParentProduct.ProdTitle}} - </span><span ng-bind="product.ProdTitle"></span></h1>
                     <h2 ng-if="product.PriceIncVat">from <span class="positive" >{{product.PriceIncVat | currency:"£"}}</span> inc VAT</h2>
                     <h3 ng-if="product.PriceIncVat"><span class="positive" >{{product.PriceExVat | currency:"£" }}</span> ex VAT</h3>
@@ -46,7 +46,7 @@
                     <div class="product-detail" ng-bind-html="product.ProdDesc || ParentProduct.ProdDesc">
                     </div>
                 </div>
-                <div class="col col-33">
+                <div class="col col-25">
                     <div class="product-form">
                         <ul class="list">
                             <li class="item" ng-if="ConfigurableProduct.length > 0">

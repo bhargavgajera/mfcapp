@@ -1292,28 +1292,33 @@ $scope.$on('$ionicView.enter', function() {
     }
 })
 
-.controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService, $cordovaSQLite) {
+.controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService, $cordovaSQLite,$timeout) {
     scope = $scope;
-    $scope.selAccount = 0;
-    //$scope.searchorderLength = "";
 
     $scope.$on('$ionicView.enter', function() {
         if($rootScope.mAccount != "" && $rootScope.mAccount != null){
-
-
-
-
+            
             $rootScope.pageTitle = '('+$rootScope.mAccount.AccountNumber+') '+$rootScope.mAccount.AccountCompany;
-            $scope.selAccount = 1;
-            if($rootScope.reOrderLength > 0){
-                $scope.reOrderUrl = "#/app/tab/orderlist";
-            }
+            
+                $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
+                    $rootScope.reOrderUrl = "";
+                    if(result.rows.item(0)['count(*)'] > 0){
+                        $rootScope.reOrderUrl = "#/app/tab/orderlist";
+                    }
+                });
+            
 
             $rootScope.accountUrl = "#/app/tab/detail";
             $rootScope.invoiceUrl = "#/app/tab/invoice";
             $rootScope.deliveryUrl = "#/app/tab/delivery";
-
-
+        }
+        else
+        {
+             
+            $rootScope.accountUrl = "";
+            $rootScope.invoiceUrl = "";
+            $rootScope.deliveryUrl = "";
+            $rootScope.reOrderUrl = "";
         }
     })    
     
@@ -1345,7 +1350,6 @@ $scope.$on('$ionicView.enter', function() {
     $ionicLoading.hide();
     $scope.dReady = 0;
     ionicHistory = $ionicHistory;
-    $rootScope.reOrderLength = 0;
     
 
 	$ionicPlatform.ready(function () {   
@@ -1557,24 +1561,16 @@ $scope.$on('$ionicView.enter', function() {
               });
 
               confirmPopup.then(function(res) {
-                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
-                        $rootScope.reOrderLength = result.rows.item(0)['count(*)'];
-                        $state.go('app.tab.myaccount', {
-                            location: false
-                        });
-                    });                
+                $state.go('app.tab.myaccount', {
+                    location: false
+                });
               });            
         }else{
                 $rootScope.$emit('updateBasket');
                 $timeout(function () {
-                    $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
-                        $rootScope.reOrderLength = result.rows.item(0)['count(*)'];
                         $state.go('app.tab.myaccount', {
                             location: false
                         });
-                    });
-                    
-
                 }, 20);
 
         }
