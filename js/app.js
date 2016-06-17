@@ -18,8 +18,11 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Related Product',sync:false}]; 
 	$rootScope.syncUserObj = [{title:'Accounts',sync:false},{title:'Order History',sync:false}]; 
 
-    if (window.localStorage.getItem("mUser") != "undefined") {
+    if (window.localStorage.getItem("mUser") != "undefined" && window.localStorage.getItem("mUser") != null) {
         $rootScope.mUser = JSON.parse(window.localStorage.getItem("mUser"));
+        if($rootScope.syncObj.length <= 4){
+            $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
+        }
     }
 
     if (window.localStorage.getItem("mAccount") == "undefined" || window.localStorage.getItem("mAccount") == null) {
@@ -116,6 +119,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 //$cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
+          $cordovaSQLite.execute($rootScope.DB, 'ALTER TABLE cart ADD COLUMN appCartID INTEGER');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice REAL, prodCode TEXT, VATRate REAL, quantity INTEGER, shipped TEXT, rowTotal REAL, rowTotalWithVAT REAL)');
 		 

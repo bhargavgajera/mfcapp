@@ -73,5 +73,6 @@
 
             
         </div>
+        <ion-infinite-scroll on-infinite="loadMoreProduct(productSearch)" ng-if="searchproductList.length < searchproductLength"  distance="1%" ></ion-infinite-scroll>
     </ion-content>
 </ion-view>

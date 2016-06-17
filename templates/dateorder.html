@@ -16,7 +16,7 @@ prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
                 <div class="orderform">
                     <div class="row">
                         <div class="col col-50">
-                            <button class="button button-small button-outline button-positive" ng-click="orderQty[$index] = order.quantity">Re-Order Qty</button>    
+                            <button class="button button-small button-outline button-positive" ng-click="orderQty[$index] = order.quantity" ng-disabled="dateorderList[$index].ProdID == null">Re-Order Qty</button>    
                         </div>
                         <div class="col col-50">
                             <label class="item-input" ng-class="{'input-enabled':!canChangePrice}">

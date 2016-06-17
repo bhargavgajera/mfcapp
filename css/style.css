@@ -291,7 +291,9 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 
 .item-select.arrow-positive .input-label{padding:4px 10px 4px 0; display: inline-block; vertical-align: middle; width: auto;}
 
+.item-select.no-arrow:after { display: none;}
 .item-select input { width: 100%; padding: 0 10px;border-radius: 4px; }
+
 
 
 .order-page .qty { font-size: 12px;}
@@ -395,6 +397,9 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 .fullbutton { display: block; padding: 20px; width: 100%; overflow: hidden; clear: both;}
 .fullbutton .button { display: block; max-width: 400px; width: 100%;}
 
+
+.error-msg {width: 100%;white-space: normal;font-size: 12px;line-height: normal;color: red;padding: 2px;}
+.input-error input {border-color: red;}
 
 
 @media screen and (min-width:768px) {

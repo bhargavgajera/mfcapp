@@ -4,74 +4,79 @@
     </div>
 
     <ion-content class="has-subheader  full-width" has-bouncing="true">
-        <div class="table-wrapper">
-            <table>
-                <tr>
-                    <th>Product</th>
-                    <th width="120">Quantity</th>
-                    <th>Remove</th>
-                    <th>Unit Price(ex VAT)</th>
-                    <th width="150">Total (ex VAT)</th>
-                    <th width="100">Total (incVAT)</th>
-                </tr>
+        <form name="basketForm" ng-submit="checkout()">
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Product</th>
+                        <th width="120">Quantity</th>
+                        <th>Remove</th>
+                        <th>Unit Price(ex VAT)</th>
+                        <th width="150">Total (ex VAT)</th>
+                        <th width="100">Total (incVAT)</th>
+                    </tr>
 
-                <tr ng-repeat="product in basketList track by $index">
-                    <td valign="top" class="name" ng-bind="product.ProdTitle"></td>
-                    <td valign="top" class="delete hide-tab">
-                        <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"> <i class="ico-delete icon-big"></i></button>
-                    </td>
-                    <td valign="top" class="qty" ng-init="priceData[$index].tbc = product.isTBC">
-                        <label class="item-select arrow-positive">
-    <select ng-model="priceData[$index].qty" ng-options="n for n in [] | range:1:product.stokQnt" ng-change="updateQty(product.basketID,priceData[$index].qty)"></select>                            
-<!--<input type="number" name="qty" ng-model="priceData[$index].qty" placeholder="Quantity" ng-blur="updateQty(product.basketID,priceData[$index].qty)">-->
-                        </label>
-                    </td>
-                    <td valign="top" class="delete hide-phone">
-                        <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"><i class="ico-delete icon-big"></i></button>
-                    </td>
-                    <td valign="top" class="price">
-                        <button class="button button-small button-clear" ng-if="mUser.CustType == 3" ng-class="{'button-stable':!priceData[$index].tbc,'button-positive':priceData[$index].tbc}" ng-click="priceData[$index].tbc = !priceData[$index].tbc;UpdateProductTbc(product.basketID,priceData[$index].tbc)"><i class="ico-right icon-big"></i></button>
-                        <input type="number" class="simple-input" ng-model="priceData[$index].uprice" ng-show="!priceData[$index].tbc" placeholder="Unit Price (ex VAT)" ng-blur="updatePrice(product.basketID,priceData[$index].uprice)" ng-class="{'input-disabled':canChangePrice}" ng-disabled="canChangePrice">
-                        <input type="text" class="simple-input" ng-show="priceData[$index].tbc" value="TBC" disabled>
-                    </td>
-                    <td valign="top" class="positive exvat">
-                        <p class="label"><span class="hide-tab">Total (ex VAT)</span> <span ng-show="priceData[$index].tbc">TBC</span><span ng-show="!priceData[$index].tbc" ng-bind="(priceData[$index].qty * priceData[$index].uprice) | currency : '£'"></span></p>
-                    </td>
-                    <td valign="top" class="positive incvat">
-                        <p class="label"><span class="hide-tab">Total (inc VAT)</span> <span ng-show="priceData[$index].tbc">TBC</span><span ng-show="!priceData[$index].tbc" ng-bind="(priceData[$index].qty * (priceData[$index].uprice + ((priceData[$index].vat * priceData[$index].uprice)/100))) | currency : '£'"></span></p>
-                    </td>
-                </tr>
-                <tr ng-show="basketList.length < 1">
-                    <td colspan="5">
-                        <h4>The basket for account {{mAccount.AccountCompany}} is empty.</h4></td>
-                </tr>
+                    <tr ng-repeat="product in basketList track by $index">
 
-                <tr class="gray align-left" ng-show="basketList.length">
-                    <td valign="top" colspan="4" class="cell-mrg"></td>
-                    <td valign="top" class="alignleft">
-                        <p>Total(ex VAT)</p>
-                        <p>Vat Total</p>
-                        <td valign="top" class="positive ">
-                            <p>{{totalPrice | currency : '£'}}</p>
-                            <p>{{totalVat | currency : '£'}}</p>
+                        <td valign="top" class="name" ng-bind="product.ProdTitle"></td>
+                        <td valign="top" class="delete hide-tab">
+                            <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"> <i class="ico-delete icon-big"></i></button>
                         </td>
-                </tr>
-                <tr class="grandtotal " ng-show="basketList.length">
-                    <td valign="top" colspan="4" class="cell-mrg"></td>
-                    <td valign="top" class="alignleft">
-                        <p>Total Goods(inc VAT)</p>
-                        <p>Delivery(inc VAT)</p>
-                        <p>Grand Total(inc VAT)</p>
-                        <td valign="top" class="positive">
-                            <p>{{totalPrice + totalVat | currency : '£'}}</p>
-                            <p>FREE</p>
-                            <p>{{totalPrice + totalVat | currency : '£'}}</p>
-                </tr>
-            </table>
-        </div>
-        <div class="fullbutton">
-            <a ng-click="checkout()" class="button button-positive pull-right" ng-if="basketList.length > 0">Checkout</a>
-        </div>
+                        <td valign="top" class="qty" ng-init="priceData[$index].tbc = product.isTBC">
+                            <ng-form name="basketFieldForm">
+                                <label class="item-select no-arrow" ng-class="{'input-error': basketFieldForm.qty.$error.required  ||  basketFieldForm.qty.$error.pattern  ||  basketFieldForm.qty.$error.number}">
+                                    <input type="number" name="qty" ng-pattern="/^[0-9]{1,4}$/" ng-model="priceData[$index].qty" placeholder="Quantity" ng-blur="updateQty(product.basketID,priceData[$index].qty)" class="simple-input" required>
 
+                                </label>
+                            </ng-form>
+                        </td>
+                        <td valign="top" class="delete hide-phone">
+                            <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"><i class="ico-delete icon-big"></i></button>
+                        </td>
+                        <td valign="top" class="price">
+                            <button class="button button-small button-clear" ng-if="mUser.CustType == 3" ng-class="{'button-stable':!priceData[$index].tbc,'button-positive':priceData[$index].tbc}" ng-click="priceData[$index].tbc = !priceData[$index].tbc;UpdateProductTbc(product.basketID,priceData[$index].tbc)"><i class="ico-right icon-big"></i></button>
+                            <input type="number" class="simple-input" ng-model="priceData[$index].uprice" ng-show="!priceData[$index].tbc" placeholder="Unit Price (ex VAT)" ng-blur="updatePrice(product.basketID,priceData[$index].uprice)" ng-class="{'input-disabled':canChangePrice}" ng-disabled="canChangePrice">
+                            <input type="text" class="simple-input" ng-show="priceData[$index].tbc" value="TBC" disabled>
+                        </td>
+                        <td valign="top" class="positive exvat">
+                            <p class="label"><span class="hide-tab">Total (ex VAT)</span> <span ng-show="priceData[$index].tbc">TBC</span><span ng-show="!priceData[$index].tbc" ng-bind="(priceData[$index].qty * priceData[$index].uprice) | currency : '£'"></span></p>
+                        </td>
+                        <td valign="top" class="positive incvat">
+                            <p class="label"><span class="hide-tab">Total (inc VAT)</span> <span ng-show="priceData[$index].tbc">TBC</span><span ng-show="!priceData[$index].tbc" ng-bind="(priceData[$index].qty * (priceData[$index].uprice + ((priceData[$index].vat * priceData[$index].uprice)/100))) | currency : '£'"></span></p>
+                        </td>
+
+                    </tr>
+                    <tr ng-show="basketList.length < 1">
+                        <td colspan="5">
+                            <h4>The basket for account {{mAccount.AccountCompany}} is empty.</h4></td>
+                    </tr>
+
+                    <tr class="gray align-left" ng-show="basketList.length">
+                        <td valign="top" colspan="4" class="cell-mrg"></td>
+                        <td valign="top" class="alignleft">
+                            <p>Total(ex VAT)</p>
+                            <p>Vat Total</p>
+                            <td valign="top" class="positive ">
+                                <p>{{totalPrice | currency : '£'}}</p>
+                                <p>{{totalVat | currency : '£'}}</p>
+                            </td>
+                    </tr>
+                    <tr class="grandtotal " ng-show="basketList.length">
+                        <td valign="top" colspan="4" class="cell-mrg"></td>
+                        <td valign="top" class="alignleft">
+                            <p>Total Goods(inc VAT)</p>
+                            <p>Delivery(inc VAT)</p>
+                            <p>Grand Total(inc VAT)</p>
+                            <td valign="top" class="positive">
+                                <p>{{totalPrice + totalVat | currency : '£'}}</p>
+                                <p>FREE</p>
+                                <p>{{totalPrice + totalVat | currency : '£'}}</p>
+                    </tr>
+                </table>
+            </div>
+            <div class="fullbutton">
+                <button class="button button-positive pull-right" ng-if="basketList.length > 0" ng-disabled="basketForm.$invalid">Checkout</button>
+            </div>
+        </form>
     </ion-content>
 </ion-view>
