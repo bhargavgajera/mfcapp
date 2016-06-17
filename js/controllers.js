@@ -225,6 +225,10 @@ angular.module('starter.controllers', [])
                                                     console.log("Error on deleting: " + err.message);
                                                 });
                                             }
+                                            else
+                                            {
+                                                $scope.syncError(error);    
+                                            }
                                         },
                                         function (error) {
                                             $scope.syncError(error);
@@ -2036,10 +2040,9 @@ angular.module('starter.controllers', [])
 
         angular.forEach($scope.dateorderList, function (el, index) {
 
-            //if ($scope.orderQty[index] <= 0) {
-            /*if ($scope.dateorderList[index].prodStockQty <= 0) {
+            if ($scope.orderQty[index] <= 0) {        
                 return false;
-            }*/
+            }
 
             $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdID = "' + el.prodID + '"')
                 .then(

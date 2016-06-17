@@ -4,7 +4,7 @@
     </div>
 
     <ion-content class="has-subheader  full-width" has-bouncing="true">
-        <form name="basketForm" ng-submit="checkout()">
+        <form name="basketForm" novalidate>
             <div class="table-wrapper">
                 <table>
                     <tr>
@@ -75,7 +75,7 @@
                 </table>
             </div>
             <div class="fullbutton">
-                <button class="button button-positive pull-right" ng-if="basketList.length > 0" ng-disabled="basketForm.$invalid">Checkout</button>
+                <button ng-click="checkout()" class="button button-positive pull-right" ng-if="basketList.length > 0" ng-disabled="basketForm.$invalid">Checkout</button>
             </div>
         </form>
     </ion-content>

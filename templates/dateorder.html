@@ -3,6 +3,7 @@
         <h2 class="title">{{BeautifyDate}}</h2>
     </div>
     <ion-content class=" has-subheader full-width" has-bouncing="true">
+       <form name="orderForm" novalidate>
         <div class="list" >
             <li class="item item-text-wrap" ng-repeat="order in dateorderList track by $index" ng-init="orderQty[$index] = 0" >
                 <div class="item-wrapper" ng-init="showContent[$index] = false">
@@ -16,7 +17,7 @@ prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
                 <div class="orderform">
                     <div class="row">
                         <div class="col col-50">
-                            <button class="button button-small button-outline button-positive" ng-click="orderQty[$index] = order.quantity" ng-disabled="dateorderList[$index].ProdID == null">Re-Order Qty</button>    
+                            <button class="button button-small button-outline button-positive" ng-click="orderQty[$index] = order.quantity || 1" ng-disabled="dateorderList[$index].ProdID == null">Re-Order Qty</button>    
                         </div>
                         <div class="col col-50">
                             <label class="item-input" ng-class="{'input-enabled':!canChangePrice}">
@@ -27,10 +28,13 @@ prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
                     </div>
                     <div class="row">
                         <div class="col col-100">
-                            <label class="item-select arrow-positive">
-                               <select ng-model="orderQty[$index]" ng-options="n for n in [] | range:1:order.prodStockQty"></select>
-                                <!--<input type="number" name="qty" value="1" placeholder="Quantity" ng-model="orderQty[$index]">-->
-                            </label>
+                           <ng-form name="orderFieldForm">
+                            <label class="item-select no-arrow" ng-class="{'input-error': orderFieldForm.qty.$error.required  ||  orderFieldForm.qty.$error.pattern  ||  orderFieldForm.qty.$error.number}">
+                                <input type="number" class="simple-input" name="qty"  placeholder="Quantity" ng-model="orderQty[$index]" placeholder="Quantity"  ng-pattern="/^[0-9]{1,4}$/" ng-disabled="dateorderList[$index].ProdID == null" required>
+                                </label>
+                            </ng-form>
+                                
+                        
                         </div>
                     </div>
                 </div>
@@ -38,7 +42,8 @@ prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
             </li>
         </div>
           <div class="fullbutton">
-          <a ng-click="allordertoBasket()" class="button button-positive" > Add Re-Orders to Basket</a>
+          <button  ng-click="allordertoBasket()" class="button button-positive" ng-disabled="orderForm.$invalid" > Add Re-Orders to Basket</button>
         </div>
+        </form>
     </ion-content>
 </ion-view>
