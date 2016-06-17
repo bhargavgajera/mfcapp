@@ -8,11 +8,15 @@
             </div>
             
         </div>
+        <button class="button button-calm" ng-click="goBack()" ng-show="innerSync == true">Back</button>
         <button class="button button-calm" ng-click="handleClick()" ng-hide="syncObj[syncObj.length-1].sync == 'done'" ng-disabled="syncButton">Sync Data</button>
         <!--<button class="button button-calm" ng-click="gotoLogin()">Go to login page</button>-->
         <button class="button button-calm" ng-show="syncObj[syncObj.length-1].sync == 'done' && innerSync == false" ng-click="gotoLogin()">Go to login page</button>
-
+        
+        
+        
         <button class="button button-calm" ng-show="syncObj[syncObj.length-1].sync == 'done' && innerSync == true" ng-click="gotoAccount()">Go to Account page</button>
+
         </div>
     </ion-content>
 </ion-view>

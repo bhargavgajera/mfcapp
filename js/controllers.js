@@ -48,7 +48,19 @@ angular.module('starter.controllers', [])
                 $scope.menuList[3].isOpen = false;
                 category.isOpen = true;
             } else {
+                 $scope.hideSubmenu(category);
                 category.isOpen = true;
+            }
+        }
+        
+        
+        $scope.hideSubmenu = function(menu)
+        {
+            var submenu = $filter('filter')(menu.sub, {'isOpen': true},true);
+            if (submenu.length)
+            {
+                $scope.hideSubmenu(submenu[0]);
+                submenu[0].isOpen = false;
             }
         }
 
@@ -66,6 +78,8 @@ angular.module('starter.controllers', [])
                 //$ionicViewService.clearHistory();
                 $ionicHistory.clearHistory();
                 $rootScope.mUser = null;
+                $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
+                $rootScope.syncObj.splice($rootScope.syncObj.indexOf(5), 1);
             }, 30);
 
             
@@ -687,8 +701,7 @@ angular.module('starter.controllers', [])
                         $rootScope.syncObj[5].sync = 'done';
                         $ionicLoading.hide();
                         $rootScope.inSyc = false;
-                       // $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
-                       // $rootScope.syncObj.splice($rootScope.syncObj.indexOf(5), 1);
+                      
                     }else{
                         $rootScope.syncUserObj[1].sync = 'done';
                         $ionicLoading.hide();
@@ -762,6 +775,7 @@ angular.module('starter.controllers', [])
         var currentDate = new Date();
         var curTimeLog = currentDate.getTime(); 
         var lateMessage = "Everything is up to date. ";
+       
     
             if((Math.abs(curTimeLog - window.localStorage.getItem('syncDate')) / 3600000) > 2){
                 lateMessage = "";
@@ -816,6 +830,10 @@ angular.module('starter.controllers', [])
                                 if( ($rootScope.inSyc && $scope.innerSync == true) || $scope.innerSync == false){
                                     $scope.loadContacts();   
                                 }else{
+                                    $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
+                                    angular.forEach($rootScope.syncObj, function (el, index) {
+                                        el.sync = false;
+                                    });
                                     $state.go('sync', {
                                         location: false
                                     });   
@@ -829,6 +847,10 @@ angular.module('starter.controllers', [])
                 if($rootScope.inSyc  || $scope.innerSync == false ){
                     $scope.loadContacts();   
                 }else{
+                    
+                    angular.forEach($rootScope.syncObj, function (el, index) {
+                        el.sync = false;
+                    });                    
                     $state.go('sync', {
                         location: false
                     });   
@@ -847,19 +869,14 @@ angular.module('starter.controllers', [])
     })
 
 
-.controller('syncCtrl', function ($scope, $state, $rootScope) {
+.controller('syncCtrl', function ($scope, $state, $rootScope, $ionicHistory) {
     root = $rootScope;
     scope = $scope;
 
     $scope.$on('$ionicView.enter', function() {
-        if ($scope.innerSync) {
-            $rootScope.inSyc = true;         
-            $rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
-            angular.forEach($rootScope.syncObj, function (el, index) {
-                el.sync = false;
-            });
-
-
+        if ($rootScope.mUser != null) {
+            $rootScope.inSyc = true;    
+            $scope.innerSync = true;     
         }
 
     })    
@@ -867,7 +884,7 @@ angular.module('starter.controllers', [])
 
 
     $scope.handleClick = function () {
-        if ($scope.innerSync) {
+        if ($rootScope.mUser != null) {
             $scope.$emit('syncStart', {
                 innerSync: true
             });
@@ -883,11 +900,16 @@ angular.module('starter.controllers', [])
             location: false
         });
     }
+
+	$scope.goBack = function () {
+        $rootScope.inSyc = false;
+        $scope.innerSync =  false;		
+        $ionicHistory.goBack();
+    }    
+
     $scope.gotoAccount = function () {
         $rootScope.inSyc = false;
-        $scope.innerSync =  false;
-        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
-        $rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);           
+        $scope.innerSync =  false;         
         $state.go('app.tab.accounts', {
             location: false
         });
@@ -1009,6 +1031,7 @@ angular.module('starter.controllers', [])
 									window.localStorage.setItem("mUser", JSON.stringify($rootScope.mUser));
 									window.localStorage.removeItem("mAccount");
 									$rootScope.mAccount = "";
+									$rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
 									
 									 var UserId = $rootScope.mUser.Id;
 										$cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
@@ -1986,13 +2009,13 @@ $scope.$on('$ionicView.enter', function() {
             $ionicLoading.hide();
             if (result.rows.length > 0) {
                 qty = qty + result.rows.item(0).qnt;
-                if (qty > StockQty) {
+                /*if (qty > StockQty) {
                     $rootScope.popup = $ionicPopup.alert({
                         title: 'Invalid quantity',
                         template: 'You have selected more quantity than the stock'
                     });
                     return false;
-                }
+                }*/
             }
             vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
            // console.log(vat.toFixed(2));
@@ -2191,7 +2214,7 @@ $scope.$on('$ionicView.enter', function() {
         if($rootScope.mAccount == null || $rootScope.mAccount == ''){
             $rootScope.popup = $ionicPopup.alert({
                 title: 'Account not selected',
-                template: 'Please select account for add product into basket'
+                template: 'Please select account'
             });
             return false;
         }
