@@ -400,7 +400,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 
 .error-msg {width: 100%;white-space: normal;font-size: 12px;line-height: normal;color: red;padding: 2px;}
 .input-error input {border-color: red;}
-
+.login-block .checkbox  { vertical-align: middle;}
 
 @media screen and (min-width:768px) {
     .hide-tab { display: none !important;}

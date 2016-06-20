@@ -53,6 +53,12 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
     $rootScope.tokenExpireDate = "";
     $rootScope.headers = "";
 
+    if(window.localStorage.getItem("email") == undefined && window.localStorage.getItem("password") == undefined && window.localStorage.getItem("remember") == undefined ){
+        window.localStorage.setItem ("email",'');
+        window.localStorage.setItem("password", '');
+        window.localStorage.setItem("remember", false);
+    }
+
     if (window.localStorage.getItem("tokenExpDate") != "undefined" && !isNaN(window.localStorage.getItem("tokenExpDate"))) {
         $rootScope.tokenExpireDate = window.localStorage.getItem("tokenExpDate");
     }
@@ -127,7 +133,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 
          $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS syncLog(ID INTEGER PRIMARY KEY AUTOINCREMENT, apiName TEXT, insertedDate TEXT, insertedLog TEXT, acType INTEGER, acId INTEGER)');
 
-         $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS searchText(ID INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT not null unique)');
+         $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS searchText(ID INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT not null)');
 
 		   if (typeof menuList == "undefined") 
 		   	var menuList = [];

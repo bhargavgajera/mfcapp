@@ -246,11 +246,11 @@ angular.module('starter.controllers', [])
 
         $scope.loadContacts = function () {
         	$rootScope.syncButton = true;
-            if ($scope.innerSync) {
-               /* ionicLoading.show({
+            /*if ($scope.innerSync) {
+                ionicLoading.show({
                     templateUrl: 'templates/syncpopup.html'
-                });*/
-            }
+                });
+            }*/
             var currentDate = new Date();
             var curTimeLog = currentDate.getTime(); 
             $rootScope.syncObj[0].sync = true;
@@ -280,20 +280,13 @@ angular.module('starter.controllers', [])
                         });
                     }
 
-
-                    
                     $rootScope.syncObj[0].sync = 'done';
                     $scope.loadProducts();
-
-
                 },
                 function (error) {
                     $scope.syncError(error);
             })
                
-        
-            
-
         }
 
 
@@ -343,7 +336,6 @@ angular.module('starter.controllers', [])
                     $rootScope.syncObj[1].sync = 'done';
                     $scope.loadCategory();
 
-
                 },
                 function (error) {
                     $scope.syncError(error);
@@ -359,8 +351,7 @@ angular.module('starter.controllers', [])
             var curTimeLog = currentDate.getTime(); 
 
             $rootScope.syncObj[2].sync = true;
-            
-           
+
             $http.get('http://mfcapi.radiatordedicated.co.uk/api/Categories',$rootScope.headers).then(function (categories) {
 
                     var subMenu = categories.data;
@@ -638,8 +629,6 @@ angular.module('starter.controllers', [])
 
                     $cordovaSQLite.execute($rootScope.DB, 'DELETE FROM order_history where userId = '+UserId);
                     //$cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER, orderHistoryNumericDate INTEGER)');
-
-
                     
                     $http.get(queryUrl,$rootScope.headers).then(function (orderHistory) {
                             $scope.orderHistory = orderHistory.data;
@@ -687,8 +676,6 @@ angular.module('starter.controllers', [])
                                         if ($scope.innerSync) {
                                             $rootScope.syncObj[5].sync = 'done';
                                             $rootScope.inSyc = false;
-                                            //$rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
-                                            //$rootScope.syncObj.splice($rootScope.syncObj.indexOf(4), 1);
                                             $ionicLoading.hide();
                                             
                                         }else{
@@ -995,10 +982,24 @@ angular.module('starter.controllers', [])
     //$scope.email = 'stephen@the-radiator.com';
     /*$scope.email = 'michaeldownie19@gmail.com';
     $scope.password = 'radiator';*/
-    $scope.email = '';
-    $scope.password = '';
+   
     $rootScope.syncButton = false;
     $rootScope.basketBadge = 0;
+
+
+    $scope.$on('$ionicView.enter', function() {
+      
+        if (window.localStorage.getItem("email") !== null && window.localStorage.getItem("password") !== null && window.localStorage.getItem("remember")) {
+            $scope.email = window.localStorage.getItem("email");
+            $scope.password = window.localStorage.getItem("password");
+            $scope.remember = true;
+        }else{
+            $scope.email = '';
+            $scope.password = '';
+            $scope.remember = false;
+        }
+    })
+
 
     $scope.openLink = function (weblink) {
       //  console.log(weblink);
@@ -1019,6 +1020,8 @@ angular.module('starter.controllers', [])
         }
         var Email = form.email.$modelValue.toLowerCase();
         var Password = form.password.$modelValue;
+        var Remember = form.remember.$modelValue;
+
 
         var currentDate = new Date();
         var curTimeLog = currentDate.getTime(); 
@@ -1057,6 +1060,16 @@ angular.module('starter.controllers', [])
 									if($rootScope.syncObj.length <= 4){
 										$rootScope.syncObj.push({title:'Accounts',sync:false},{title:'Order History',sync:false});
 									}
+                                    if(Remember == true){
+                                        window.localStorage.setItem ("email",Email);
+                                        window.localStorage.setItem("password", Password);
+                                        window.localStorage.setItem("remember", true);
+                                    }else{
+                                        window.localStorage.setItem ("email",'');
+                                        window.localStorage.setItem("password", '');
+                                        window.localStorage.setItem("remember", false);
+                                    }
+
 									
 									 var UserId = $rootScope.mUser.Id;
 										$cordovaSQLite.execute($rootScope.DB, 'SELECT insertedLog FROM syncLog where (apiName="Accounts" OR apiName="Orderhistory") and acId = '+UserId)
@@ -1238,7 +1251,7 @@ angular.module('starter.controllers', [])
         var nCount = 0;
         var nInsertedCount = 0;
         var dt = new Date().getTime();
-        dt = $rootScope.mAccount.AccountId+dt;
+        dt = "APP-"+$rootScope.mAccount.AccountId+dt;
         $cordovaSQLite.execute($rootScope.DB, 'INSERT INTO cart(custID, accountNumber, orderDate, orderTotal, orderDeliveryTotal, orderShipSameAsBilling, orderShipCompany, orderShipTitle, orderShipFirstname, orderShipSurname, orderShipHouseNameNo, orderShipAddress1, orderShipAddress2, orderShipCity, orderShipCounty, orderShipPostcode, orderShipTelephone, orderShipMobile, orderShipFax, orderDelInstr1, orderGiftWrap,orderGiftWrapMessage, appCartID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$rootScope.mUser.Id, $rootScope.mAccount.AccountNumber, stringDate, $rootScope.totalPrice, $rootScope.totalPrice, 0, $rootScope.mAccount.AccountCompany, DeliveryTitle, FirstName, Surname, DeliveryHouseName, DeliveryAddressLine1, DeliveryAddressLine2, DeliveryTown, DeliveryCountry, DeliveryPostcode, Telephone, Mobile, '', '', 0, '',dt])
             .then(function (result) {
                     cartID = result.insertId;
@@ -1293,15 +1306,15 @@ angular.module('starter.controllers', [])
             title: 'Order placed',
             template: 'Your order has been placed successfully',
             buttons: [
-                {
-                    text: 'Ok',
-                    type: 'button-positive',
-                    onTap: function (e) {
-                        $state.go('app.tab.accounts', {
-                            location: false
-                        });
-                    }
-                      }
+                        {
+                            text: 'Ok',
+                            type: 'button-positive',
+                            onTap: function (e) {
+                                $state.go('app.tab.accounts', {
+                                    location: false
+                                });
+                            }
+                        }
                     ]
         });
     }
@@ -1324,11 +1337,10 @@ angular.module('starter.controllers', [])
 	})    
 
 
-
-
     $cordovaSQLite.execute($rootScope.DB, 'SELECT word FROM searchText order by ID DESC LIMIT 5').then(function (result) {
             
             $scope.searchWordList = [];
+        
             if (result.rows.length > 0) {
                 for (var i = 0; i < result.rows.length; i++) {
                     $scope.searchWordList.push(result.rows.item(i));
@@ -1363,7 +1375,7 @@ angular.module('starter.controllers', [])
             $cordovaKeyboard.close();
             $scope.searchproductList = [];
             $scope.searchproductLength = 0;
-            $scope.searchtext = searchtext;
+            $scope.productSearch = searchtext;
             $scope.pageNum = 0;
             
 			$cordovaSQLite.execute($rootScope.DB, 'INSERT INTO searchText (word) VALUES("'+searchtext+'")');
@@ -1374,7 +1386,7 @@ angular.module('starter.controllers', [])
             $scope.searchproductList = [];
            
             $scope.searchproductLength = 0;
-            $scope.searchtext = '';
+            $scope.productSearch = '';
             $scope.pageNum = 0;
 
         }
@@ -1382,7 +1394,7 @@ angular.module('starter.controllers', [])
     }
 
     $scope.loadMoreProduct = function(searchtext) {
-    	var searchtext = $scope.searchtext;
+    	var searchtext = $scope.productSearch;
     	console.log($scope.pageNum);
         var pageOffset = 0;
         if($scope.pageNum > 0){
@@ -1489,8 +1501,7 @@ angular.module('starter.controllers', [])
     $scope.clearSearch = function(){
         $scope.data.accountSearch = "";
     }
-
-   
+  
     //console.log($ionicHistory.backView());
 
      $scope.loadMore = function() {
@@ -1532,7 +1543,9 @@ angular.module('starter.controllers', [])
                                 if (result.rows.length < $scope.limitData) {
                                      $scope.noMoreItemsAvailable = true;
                                 }
+
                                 $scope.pageNum = $scope.pageNum + 1;
+
                             }else{
                                 $scope.noMoreItemsAvailable = true;
                             }
@@ -1763,10 +1776,6 @@ angular.module('starter.controllers', [])
     
    
 
-    /* if ($rootScope.mAccount)
-     {
-         $rootScope.orderhList = $filter('filter')( $rootScope.orderhistoryData, {accountNumber: $rootScope.mAccount.AccountNumber}, true) || [];
-     }*/
     $ionicLoading.show({
         template: '<img src="img/loader.gif">'
     });
@@ -1779,11 +1788,8 @@ angular.module('starter.controllers', [])
     $scope.searchOrder = function (searchtext) {
         if (searchtext != "") {
             $cordovaKeyboard.close();
-            /*$scope.searchorderList = $filter('filter')($rootScope.orderhList, {
-                prodTitle: searchtext
-            }) || [];*/
             $rootScope.searchorderList = [];
-             $scope.searchorderLength = 0;
+            $scope.searchorderLength = 0;
             $scope.searchtext = searchtext;
             $scope.pageNum = 0;
 
@@ -2005,11 +2011,7 @@ angular.module('starter.controllers', [])
 
     $scope.canChangePrice = ($scope.mUser.CustType == 1 || $scope.mUser.CustType == 2 || $scope.mUser.CustType == 3) ? false : true;
 
-    /*$scope.dateorderList = $filter('filter')($rootScope.orderhList, {
-        orderHistoryDate: $scope.CurrentDate
-    }) || [];*/
-
-
+    
     var frToday = new Date($scope.CurrentDate);
     var frTime = frToday.getTime();
 
@@ -2069,15 +2071,8 @@ angular.module('starter.controllers', [])
             $ionicLoading.hide();
             if (result.rows.length > 0) {
                 qty = qty + result.rows.item(0).qnt;
-                /*if (qty > StockQty) {
-                    $rootScope.popup = $ionicPopup.alert({
-                        title: 'Invalid quantity',
-                        template: 'You have selected more quantity than the stock'
-                    });
-                    return false;
-                }*/
             }
-            vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
+            var vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
            // console.log(vat.toFixed(2));
             
             $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'", "'+qty+'", "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')
