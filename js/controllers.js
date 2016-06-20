@@ -1215,6 +1215,8 @@ angular.module('starter.controllers', [])
             .then(function (result) {}, function (error) {
                 console.log("Error on saving: " + error.message);
             })
+
+        $rootScope.$emit('updateBasket');
     }
 
     $scope.updatePrice = function (proId, price) {
@@ -1324,7 +1326,7 @@ angular.module('starter.controllers', [])
     scope = $scope;
     root = $rootScope;
     $scope.productSearch = '';
-    $scope.searchproductList;
+    //$scope.searchproductList;
     $scope.searchWordList = '';
     $scope.pageNum = 0;
     $scope.limitData = 25;
@@ -1334,13 +1336,11 @@ angular.module('starter.controllers', [])
 
 	$scope.$on('$ionicView.enter', function() {
 	    document.getElementById("productSearch").focus();
-	})    
 
+        $cordovaSQLite.execute($rootScope.DB, 'SELECT word FROM searchText group by word order by ID DESC LIMIT 5').then(function (result) {
 
-    $cordovaSQLite.execute($rootScope.DB, 'SELECT word FROM searchText order by ID DESC LIMIT 5').then(function (result) {
-            
             $scope.searchWordList = [];
-        
+
             if (result.rows.length > 0) {
                 for (var i = 0; i < result.rows.length; i++) {
                     $scope.searchWordList.push(result.rows.item(i));
@@ -1357,7 +1357,11 @@ angular.module('starter.controllers', [])
                 template: 'Something went wrong'
             });
             console.log("Error on loading: " + error.message);
-        });    
+        }); 
+
+	})    
+
+   
 
 
     $scope.clearSearch = function(){
@@ -1439,7 +1443,7 @@ angular.module('starter.controllers', [])
     $scope.$on('$ionicView.enter', function() {
         if($rootScope.mAccount != "" && $rootScope.mAccount != null){
             
-            $rootScope.pageTitle = '('+$rootScope.mAccount.AccountNumber+') '+$rootScope.mAccount.AccountCompany;
+            $rootScope.pageTitle = '('+$rootScope.mAccount.AccountNumber+') '+$rootScope.mAccount.AccountCompany+' - '+$rootScope.mAccount.BillingAddressLine1;
             
                 $cordovaSQLite.execute($rootScope.DB, 'SELECT count(*) FROM order_history WHERE accountNumber = "' + $rootScope.mAccount.AccountNumber + '" ').then(function(result){
                     $rootScope.reOrderUrl = "";
@@ -1676,7 +1680,7 @@ angular.module('starter.controllers', [])
          window.localStorage.setItem("mAccount", JSON.stringify($rootScope.mAccount));
 
 
-		if($rootScope.mAccount != null && oldAccount.AccountId != undefined && account.AccountId != oldAccount.AccountId ){
+		if(oldAccount.AccountId != undefined && account.AccountId != undefined && $rootScope.mAccount != null && account.AccountId != oldAccount.AccountId ){
 			$ionicHistory.clearCache();
 		}
 
@@ -1739,6 +1743,7 @@ angular.module('starter.controllers', [])
             });
     }
 
+    
 
     $scope.checkAlpha = function (char, index) {
 
@@ -2162,8 +2167,11 @@ angular.module('starter.controllers', [])
     $scope.ConfigurableProduct = [];
     $scope.ParentProduct = [];
     $scope.CurrentConfigurable = [];
+    
+    
     $scope.data = {
-        Qty: 1
+        Qty: 1,
+        CurrentConfigurable: Number($state.params.Id)
     };
     $scope.productId = Number($state.params.Id);
 
@@ -2173,7 +2181,7 @@ angular.module('starter.controllers', [])
                 $ionicLoading.hide();
                 if (result.rows.length > 0) {
                     $scope.product = result.rows.item(0);
-                    $scope.CurrentConfigurable = $scope.product;
+                    $scope.data.CurrentConfigurable = $scope.product;
                     $nProductId = $scope.product.ProdParentID > 0 ? $scope.product.ProdParentID : $scope.productId;
                     $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = "' + $nProductId + '"')
                         .then(
@@ -2290,25 +2298,50 @@ angular.module('starter.controllers', [])
             });
             return false;
         }
-
+        if(qty == ''){
+            qty = 1;
+        }
 
         $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM basket WHERE ProdID = "' + Id + '" AND UserID = '+$rootScope.mAccount.AccountId)
             .then(
                 function (result) {
                     $ionicLoading.hide();             
                     vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
-                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'", "'+qty+'", "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
-                    //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
-                        .then(function (result) {
-                            $rootScope.popup = $ionicPopup.alert({
-                                title: 'Added into basket',
-                                template: 'Product has been added to basket'
-                            });
-                            $rootScope.$emit('updateBasket');
 
-                        }, function (error) {
-                            console.log("Error on saving: " + error.message);
-                        })
+
+                $cordovaSQLite.execute($rootScope.DB, 'select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id)
+                    .then(function (result) {
+
+                        if(result.rows.length > 0){
+                            $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'",((select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id+')+'+qty+'), "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
+                            //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
+                                .then(function (result) {
+                                    $rootScope.popup = $ionicPopup.alert({
+                                        title: 'Added into basket',
+                                        template: 'Product has been added to basket'
+                                    });
+                                    $rootScope.$emit('updateBasket');
+
+                                }, function (error) {
+                                    console.log("Error on saving: " + error.message);
+                                })                        
+                        }else{
+                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'",'+qty+', "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
+                                //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
+                                .then(function (result) {
+                                    $rootScope.popup = $ionicPopup.alert({
+                                        title: 'Added into basket',
+                                        template: 'Product has been added to basket'
+                                    });
+                                    $rootScope.$emit('updateBasket');
+
+                                }, function (error) {
+                                    console.log("Error on saving: " + error.message);
+                                })                            
+                        }
+
+                    })
+
                 },
                 function (error) {
                     $ionicLoading.hide();
@@ -2318,6 +2351,7 @@ angular.module('starter.controllers', [])
                     });
                     console.log("Error on loading: " + error.message);
                 });
+            
     }
 
     $scope.swichProduct = function (Id) {
