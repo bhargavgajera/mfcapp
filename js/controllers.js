@@ -877,7 +877,7 @@ angular.module('starter.controllers', [])
     })
 
 
-.controller('syncCtrl', function ($scope, $state, $rootScope, $ionicHistory, $location) {
+.controller('syncCtrl', function ($scope, $state, $rootScope, $ionicHistory, $location, $timeout) {
     root = $rootScope;
     scope = $scope;
 
@@ -908,6 +908,9 @@ angular.module('starter.controllers', [])
         $state.go('login', {
             location: false
         });
+         $timeout(function () {                                                        
+            $ionicHistory.clearHistory();                                            
+        }, 30);
     }
 
 	$scope.goBack = function () {
@@ -923,6 +926,9 @@ angular.module('starter.controllers', [])
         $state.go('app.tab.accounts', {
             location: false
         });
+         $timeout(function () {                                                        
+            $ionicHistory.clearHistory();                                            
+        }, 30);
     }
 
 })
@@ -989,13 +995,11 @@ angular.module('starter.controllers', [])
 
     $scope.$on('$ionicView.enter', function() {
       
-        if (window.localStorage.getItem("email") !== null && window.localStorage.getItem("password") !== null && window.localStorage.getItem("remember")) {
+        if (window.localStorage.getItem("email") !== null && window.localStorage.getItem("remember")) {
             $scope.email = window.localStorage.getItem("email");
-            $scope.password = window.localStorage.getItem("password");
             $scope.remember = true;
         }else{
             $scope.email = '';
-            $scope.password = '';
             $scope.remember = false;
         }
     })
@@ -1062,11 +1066,9 @@ angular.module('starter.controllers', [])
 									}
                                     if(Remember == true){
                                         window.localStorage.setItem ("email",Email);
-                                        window.localStorage.setItem("password", Password);
                                         window.localStorage.setItem("remember", true);
                                     }else{
                                         window.localStorage.setItem ("email",'');
-                                        window.localStorage.setItem("password", '');
                                         window.localStorage.setItem("remember", false);
                                     }
 
@@ -1726,24 +1728,43 @@ angular.module('starter.controllers', [])
 
     $scope.SwitchFrom = function(nID,oID) {
 
-        $cordovaSQLite.execute($rootScope.DB, 'DELETE FROM basket where UserID ='+nID).then(function (result) {});   
+        //$cordovaSQLite.execute($rootScope.DB, 'DELETE FROM basket where UserID ='+nID).then(function (result) {}); 
+        //$rootScope.$emit('updateBasket');
 
-        $cordovaSQLite.execute($rootScope.DB, 'INSERT INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) SELECT ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, '+nID+' from basket where UserID ='+oID)
-            .then(
-                function (result) {
-                    $rootScope.$emit('updateBasket');
 
-        },
+        var tempBasketlist = angular.copy($scope.basketList);
+        var cnt = 0;
+        for (var i = 0; i < tempBasketlist.length; i++) {
+            $cordovaSQLite.execute($rootScope.DB, 'select qnt from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[i].ProdID)
+            .then(function (result) {
+                if(result.rows.length > 0){
+                    var totalQty = tempBasketlist[cnt].qnt + result.rows.item(0).qnt;
+                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+tempBasketlist[cnt].ProdTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+totalQty+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result1) {
+                        $rootScope.$emit('updateBasket');
+
+                    });
+
+                } else{
+                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+tempBasketlist[cnt].ProdTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+tempBasketlist[cnt].qnt+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result2) {
+                        $rootScope.$emit('updateBasket');
+
+                    });
+
+                }
+                cnt++;
+            },
             function (error) {
                 $rootScope.popup = $ionicPopup.alert({
                     title: 'Error',
                     template: 'Something went wrong'
                 });
-                console.log("Error on loading: " + error);
+                console.log("Error on loading: " + error);                        
+
             });
+            
+        }
     }
 
-    
 
     $scope.checkAlpha = function (char, index) {
 
@@ -2171,7 +2192,6 @@ angular.module('starter.controllers', [])
     
     $scope.data = {
         Qty: 1,
-        CurrentConfigurable: Number($state.params.Id)
     };
     $scope.productId = Number($state.params.Id);
 
@@ -2181,7 +2201,11 @@ angular.module('starter.controllers', [])
                 $ionicLoading.hide();
                 if (result.rows.length > 0) {
                     $scope.product = result.rows.item(0);
-                    $scope.data.CurrentConfigurable = $scope.product;
+                    if($scope.product.ProdParentID > 0){
+                        $scope.data.CurrentConfigurable = $scope.product;
+                    }
+                    
+                    $scope.CurrentConfigurable = $scope.product;
                     $nProductId = $scope.product.ProdParentID > 0 ? $scope.product.ProdParentID : $scope.productId;
                     $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = "' + $nProductId + '"')
                         .then(

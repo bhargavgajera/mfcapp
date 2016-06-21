@@ -53,9 +53,8 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
     $rootScope.tokenExpireDate = "";
     $rootScope.headers = "";
 
-    if(window.localStorage.getItem("email") == undefined && window.localStorage.getItem("password") == undefined && window.localStorage.getItem("remember") == undefined ){
+    if(window.localStorage.getItem("email") == undefined && window.localStorage.getItem("remember") == undefined ){
         window.localStorage.setItem ("email",'');
-        window.localStorage.setItem("password", '');
         window.localStorage.setItem("remember", false);
     }
 
@@ -72,7 +71,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 
 		if($rootScope.tokenExpireDate != ""  && $rootScope.todayDate > Number($rootScope.tokenExpireDate)){
 		    $rootScope.getToken();
-		}else if($rootScope.tokenExpireDate == ""){
+		}else if($rootScope.tokenExpireDate == "" || $rootScope.tokenExpireDate == null){
 		    $rootScope.getToken();
 		}else if($rootScope.headers == ''){
 		    $rootScope.getToken();
