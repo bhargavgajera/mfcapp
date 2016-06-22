@@ -341,13 +341,14 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .productlist .list .item { border-top: none; border-bottom: none;}
 .productlist .list .item:nth-child(even) .item-content{ background-color: #F0F0F0;}
 .productlist .id{ -webkit-box-flex:0; -webkit-flex:0 0 10%; -ms-flex:0 0 10%; flex:0 0 10%}
-.productlist .title{ -webkit-box-flex:0; -webkit-flex:0 0 70%; -ms-flex:0 0 70%; flex:0 0 70%;}
-.productlist .price-block{ -webkit-box-flex:0; -webkit-flex:0 0 20%; -ms-flex:0 0 20%; flex:0 0 20%; text-align: right;}
+.productlist .title{ -webkit-box-flex:0; -webkit-flex:0 0 70%; -ms-flex:0 0 70%; flex:0 0 60%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+.productlist .price-block{ -webkit-box-flex:0; -webkit-flex:0 0 20%; -ms-flex:0 0 20%; flex:0 0 30%; text-align: right;}
 .productlist .price-block .errmsg { text-transform: uppercase;font-size: 14px;}
 .productlist .price-block .price { width: 100%; text-align: right;}
 .productlist .price-block .price span {padding:0 5px;}
 .productlist .price-block .price em i { font-style: normal; font-size: 12px;}
-
+.listheading .container { padding-right:20px;}
+.item-complex .item-content { padding-right: 20px;}
 
 .table-wrapper {background: #fff;}
 table { width: 100%; text-align: left; }
@@ -449,7 +450,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .orderform { width: 100%; padding: 0;}
     .orderform .row { padding: 0px; margin:0 -5px;}
     .orderform .row .col { padding: 10px 5px;}
-    .order-page .list .item { padding: 10px 10px;}
+    .order-page .list .item,.order-page .list .item.date-item { padding: 10px 10px;}
     .order-page .item-option .item-select select{ width:170px; direction: ltr;}
     .order-page .list .item-option { padding:30px 10px;}
     .order-page .meta span { display: block}
