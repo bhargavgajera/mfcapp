@@ -1,4 +1,4 @@
-<ion-view view-title="<marquee>{{pageTitle}}</marquee>" class="order-page ">
+<ion-view view-title="<marquee scrolldelay='350'>{{pageTitle}}</marquee>" class="order-page ">
     <div class="tabs-top order-tabs">
         <div class="tabs">
             <a class="tab-item  button  " ng-click="bydate=true;byproduct=false" ng-class="{'active':bydate}">By Date</a>
@@ -53,6 +53,10 @@
                     </label>
                     <button class="button button-positive" type="submit"><i class="icon ico-search" ng-disabled="orderhList.length < 1"></i></button>
                 </form>
+				<p class="padding-top item-text-wrap" ng-bind="orderPfound">
+						Order history not available
+				</p>
+
             </div>
 
             <div class="order-wrapper" ng-repeat="order in searchorderList track by $index" ng-show="searchorderList.length > 0">
@@ -70,9 +74,7 @@
                 </li>
             </div>
 
-            <li class="item item-text-wrap" ng-show="searchorderList.length < 1">
-                Order history not available
-            </li>
+            
 
             <div class="card search-msg" ng-hide="searchorderList">
                 <div class="item item-icon-left">

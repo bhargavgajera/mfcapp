@@ -12,7 +12,7 @@ var hash = bcrypt.hashSync("B4c0/\/", salt);
 
 App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 
-App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen) {
+App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen,$timeout) {
     
      //$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
 	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Related Product',sync:false}]; 
@@ -164,6 +164,11 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		   
         $rootScope.$emit('updateBasket');
         
+        if ($cordovaNetwork.isOnline() && $rootScope.tokenExpireDate == null) {
+            $rootScope.getToken();
+        }
+
+
 		$rootScope.UUID = $cordovaDevice.getUUID();
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -280,7 +285,24 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
             }
         }
     })
-    
+
+    .state('app.tab.version', {
+        url: '/version',
+        views: {
+            'tab-version': {
+                templateUrl: 'templates/version.html',
+                controller:'versionCtrl'
+            }
+        }
+    })
+   .state('app.version', {
+        url: '/version',
+        views: {
+            'appContent': {
+                templateUrl: 'templates/version.html'
+            }
+        }
+    })
      .state('app.tab.productlist', {
         url: '/productlist/:Id',
         views: {

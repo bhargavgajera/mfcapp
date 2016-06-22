@@ -50,23 +50,23 @@
             <ion-list>
                <ion-item class="item" ng-show="searchproductList.length > 1" >
                 <div class="container">
-                    <div class="id"><strong>ID</strong></div>
+                    <div class="id"><strong>Prod Code</strong></div>
                     <div class="title" ><strong>Name</strong></div>
                     <div class="price-block"><strong>Price</strong></div>
                 </div>
              </ion-item>
                 <ion-item class="item" ng-repeat="productlist in searchproductList" ng-href="#/app/tab/product/{{productlist.ProdID}}">
                     <div class="container">
-                        <div class="id" ng-bind="productlist.ProdID"></div>
+                        <div class="id" ng-bind="productlist.ProdCode"></div>
                         <div class="title" ng-bind="productlist.ProdTitle">Lifeline Lamb and Ewe Lick 22.5 kg</div>
                         <div class="price-block">
                             <div class="errmsg assertive" ng-if="!productlist.PriceExVat && !productlist.PriceIncVat "> price is unavailable</div>
-                            <div class="price" ng-if="productlist.PriceExVat"><span class="positive" ng-bind="productlist.PriceExVat | currency:'£'"></span><em> ex VAT</em></div>
-                            <div class="price" ng-if="productlist.PriceIncVat"><span class="positive" ng-bind="productlist.PriceIncVat | currency:'£'"></span><em> inc VAT</em></div>
+                            <div class="price" ng-if="productlist.PriceExVat"><span class="positive" ng-bind="productlist.PriceExVat | currency:'£'"></span><em> <i>ex</i> VAT</em></div>
+                            <div class="price" ng-if="productlist.PriceIncVat"><span class="positive" ng-bind="productlist.PriceIncVat | currency:'£'"></span><em> <i>inc</i> VAT</em></div>
                         </div>
                     </div>
                 </ion-item>
-                <ion-item class="item" ng-show="searchproductList.length < 1">
+                <ion-item class="item" ng-show="searchproductList.length < 1 && searchpro == 0">
                     <h4>Search Result not found</h4>
                 </ion-item>
             </ion-list>

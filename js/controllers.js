@@ -133,6 +133,7 @@ angular.module('starter.controllers', [])
             
         }
 
+
         $scope.gotoSearch = function () {
             $state.go('app.tab.search', {
                 location: 'replace'
@@ -153,7 +154,6 @@ angular.module('starter.controllers', [])
             });
 
         }
-
 
 
         $rootScope.getToken = function(){
@@ -183,6 +183,42 @@ angular.module('starter.controllers', [])
             });
         }
 
+        /*$rootScope.intMarquee = function(){
+            var txt = $("#marqueetext");
+            txt.bind('scroll', function () {
+                var el = $(this);
+                // Scroll state machine
+                var scrollState = el.data("scrollState") || 0;
+                el.data("scrollState", (scrollState + 1) % 4);
+                switch (scrollState) {
+                    case 0: // initial wait
+                        el.css({ left: 0 });
+                        el.show();
+                        window.setTimeout(function () {
+                            el.trigger("scroll");
+                        }, 5000);
+                        break;
+                    case 1: // start scroll
+                        var delta = el.parent().width() - el.width();
+                        if (delta < 0) {
+                            el.animate({ left: delta }, 2000, "linear", function () {
+                                el.trigger("scroll");
+                            });
+                        }
+                        break;
+                    case 2: // delay before scroll back
+                        window.setTimeout(function () {
+                            el.trigger("scroll");
+                        }, 1000);
+                        break;
+                    case 3: // fade out
+                        el.fadeOut("slow", function () {
+                            el.trigger("scroll");
+                        });
+                        break;
+                }
+            }).trigger("scroll");
+        }*/
 
 
         $rootScope.loadOrders = function () {
@@ -1143,13 +1179,13 @@ angular.module('starter.controllers', [])
 .controller('appCtrl', function ($scope, $state) { })
 
 
-
 .controller('tabCtrl', function ($scope, $rootScope) {
     scope = $scope;
     root = $rootScope;
+
 })
 
-.controller('basketCtrl', function ($scope, $rootScope, $ionicLoading, $cordovaSQLite, $filter, $ionicPopup, $state) {
+.controller('basketCtrl', function ($scope, $rootScope, $ionicLoading, $cordovaSQLite, $filter, $ionicPopup, $state, $timeout) {
     scope = $scope;
     root = $rootScope;
     $scope.canChangePrice = true;
@@ -1161,9 +1197,11 @@ angular.module('starter.controllers', [])
 
     $scope.$on('$ionicView.enter', function() {
      $rootScope.$emit('updateBasket');
+        /*$timeout(function () {
+            $rootScope.intMarquee();
+        }, 20);*/
     })    
     
-
     $scope.deleteProduct = function (Id) {
 
         $rootScope.popup = $ionicPopup.show({
@@ -1232,7 +1270,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('checkoutCtrl', function ($scope, $rootScope, $cordovaSQLite, $ionicLoading, $ionicPopup, $state, $ionicHistory) {
+.controller('checkoutCtrl', function ($scope, $rootScope, $cordovaSQLite, $ionicLoading, $ionicPopup, $state, $ionicHistory, $timeout) {
     ionicHistory = $ionicHistory;
     scope = $scope;
     root = $rootScope;
@@ -1304,7 +1342,11 @@ angular.module('starter.controllers', [])
                     console.log("Error on loading: " + error.message);
                 });
 
-
+       /* $scope.$on('$ionicView.enter', function() {
+            $timeout(function () {
+                $rootScope.intMarquee();
+            }, 20);
+        })    */
 
         $rootScope.popup = $ionicPopup.alert({
             title: 'Order placed',
@@ -1334,6 +1376,8 @@ angular.module('starter.controllers', [])
     $scope.limitData = 25;
     $scope.searchproductList = [];
     $scope.noMoreItemsAvailable = false;
+    $scope.searchpro = 1;
+
 
 
 	$scope.$on('$ionicView.enter', function() {
@@ -1387,6 +1431,11 @@ angular.module('starter.controllers', [])
 			$cordovaSQLite.execute($rootScope.DB, 'INSERT INTO searchText (word) VALUES("'+searchtext+'")');
             $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = 0 AND ProdTitle like "%' + searchtext + '%" ').then(function(result){
             $scope.searchproductLength = result.rows.length;
+                if($scope.searchproductLength == 0){
+                    $scope.searchpro = 0;    
+                }else{
+                    $scope.searchpro = 1;   
+                }
             })
         } else {
             $scope.searchproductList = [];
@@ -1394,6 +1443,7 @@ angular.module('starter.controllers', [])
             $scope.searchproductLength = 0;
             $scope.productSearch = '';
             $scope.pageNum = 0;
+            $scope.searchpro = 0; 
 
         }
 
@@ -1442,6 +1492,16 @@ angular.module('starter.controllers', [])
 .controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService, $cordovaSQLite,$timeout) {
     scope = $scope;
 
+   /* $scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+            $rootScope.intMarquee();
+        }, 20);
+        
+    })*/
+    
+
+
+
     $scope.$on('$ionicView.enter', function() {
         if($rootScope.mAccount != "" && $rootScope.mAccount != null){
             
@@ -1472,10 +1532,17 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('accountdetailCtrl', function ($scope, $rootScope, $state) {
+.controller('accountdetailCtrl', function ($scope, $rootScope, $state, $timeout) {
     state = $state;
     scope = $scope;
     $scope.accountPage = $state.current.url.replace("/", "");
+
+    /*$scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+             $rootScope.intMarquee();
+        }, 20);
+
+    })*/
 })
 
 .controller('accountsCtrl', function ($rootScope, $scope, $ionicLoading, $ionicPopup, $http, $state, $filter, $timeout, $cordovaSQLite, $ionicPlatform, $cordovaKeyboard, $ionicScrollDelegate, $ionicHistory) {
@@ -1511,6 +1578,7 @@ angular.module('starter.controllers', [])
     //console.log($ionicHistory.backView());
 
      $scope.loadMore = function() {
+            console.log('accountctrl');
             if($scope.data.accountSearch != ''){
                 $scope.accountFilter($scope.data.accountSearch);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -1689,7 +1757,7 @@ angular.module('starter.controllers', [])
         if($rootScope.basketBadge > 0 && account.AccountId != oldAccount.AccountId && $rootScope.mAccount != null){
               var confirmPopup = $ionicPopup.confirm({
                  title: 'Switch Basket',
-                 template: 'Carry with same basket',
+                 template: 'Carry over Basket',
                  scope: $scope,
                   buttons: [
                     {  
@@ -1777,7 +1845,7 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('orderlistCtrl', function ($scope, $rootScope, $filter, $ionicLoading, $cordovaSQLite, $ionicPopup, $cordovaKeyboard) {
+.controller('orderlistCtrl', function ($scope, $rootScope, $filter, $ionicLoading, $cordovaSQLite, $ionicPopup, $cordovaKeyboard,  $timeout) {
 
     scope = $scope;
     $scope.bydate = true;
@@ -1811,6 +1879,12 @@ angular.module('starter.controllers', [])
     }
 
 
+    /*$scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+            $rootScope.intMarquee();
+        }, 20);
+    })   */ 
+
     $scope.searchOrder = function (searchtext) {
         if (searchtext != "") {
             $cordovaKeyboard.close();
@@ -1822,11 +1896,13 @@ angular.module('starter.controllers', [])
             $cordovaSQLite.execute($rootScope.DB, 'SELECT strftime("%Y-%m-%d", orderHistoryDate) histDate FROM order_history WHERE (prodTitle LIKE "'+$scope.searchtext+'%" OR prodTitle LIKE  "%'+$scope.searchtext+'%") and accountNumber = "' + $rootScope.mAccount.AccountNumber + '" group by histDate').then(function(result){
             $scope.searchorderLength = result.rows.length;
             cnt = -1;
+            $scope.orderPfound = 'You searched for '+searchtext+'.We found '+$scope.searchorderLength+' results.';
             $scope.lastDate = "";
             $scope.oldDate = "";
 
             })
         } else {
+            $scope.orderPfound = '';
             $rootScope.searchorderList = [];
             cnt = -1;
             $scope.lastDate = "";
@@ -2026,7 +2102,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('dateorderCtrl', function ($scope, $state, $rootScope, $filter, $ionicLoading, $cordovaSQLite, $ionicPopup) {
+.controller('dateorderCtrl', function ($scope, $state, $rootScope, $filter, $ionicLoading, $cordovaSQLite, $ionicPopup, $timeout) {
     scope = $scope;
     $scope.dateorderList = [];
     $scope.CurrentDate = $state.params.Date;
@@ -2054,7 +2130,11 @@ angular.module('starter.controllers', [])
             }
     });
 
-
+    /*$scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+            $rootScope.intMarquee();
+        }, 20);
+    })  */ 
 
 
     $scope.NotAvailableProduct = [];
@@ -2127,7 +2207,7 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('productlistCtrl', function ($scope, $rootScope, $state, $filter, $ionicHistory, $ionicLoading, $cordovaSQLite, $ionicPopup) {
+.controller('productlistCtrl', function ($scope, $rootScope, $state, $filter, $ionicHistory, $ionicLoading, $cordovaSQLite, $ionicPopup, $timeout) {
 
     scope = $scope;
     root = $rootScope;
@@ -2147,6 +2227,12 @@ angular.module('starter.controllers', [])
         $rootScope.productTitle = currentCat.catTitle;
     }
 
+   /* $scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+             $rootScope.intMarquee();
+        }, 20);
+    })  */
+    
 
     $scope.$on('eventName', function (event, args) {
         var currentCat = $filter('filter')($rootScope.categoryList, {
@@ -2180,7 +2266,7 @@ angular.module('starter.controllers', [])
             });
 })
 
-.controller('productCtrl', function ($scope, $rootScope, $state, $filter, $ionicHistory, $ionicPopup, $cordovaSQLite, $ionicLoading) {
+.controller('productCtrl', function ($scope, $rootScope, $state, $filter, $ionicHistory, $ionicPopup, $cordovaSQLite, $ionicLoading, $timeout) {
     scope = $scope;
     root = $rootScope;
     state = $state;
@@ -2188,7 +2274,12 @@ angular.module('starter.controllers', [])
     $scope.ConfigurableProduct = [];
     $scope.ParentProduct = [];
     $scope.CurrentConfigurable = [];
-    
+
+    /*$scope.$on('$ionicView.enter', function() {
+        $timeout(function () {
+             $rootScope.intMarquee();
+        }, 20);
+    })   */
     
     $scope.data = {
         Qty: 1,
