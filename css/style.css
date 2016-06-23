@@ -208,6 +208,10 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .submenu > .list { height: calc(100% - 36px); overflow-x: scroll;}
 
 
+.platform-ios .bar-header .header-item.title { left: 90px !important; }
+.platform-ios .bar-header .header-item.back-button.hide ~ .header-item.title {left: 50px !important;}
+
+
 .login-page { background: url(../img/bg.jpg) no-repeat center center;}
 .login-page .logo {text-align: center; padding:0 20px 20px;}
 .login-page .logo img {width: 100%;}
