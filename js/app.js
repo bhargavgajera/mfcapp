@@ -166,8 +166,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
         $rootScope.$emit('updateBasket');
 
         $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-            console.log(toState);
-            if(toState.url = '/basket'){
+            if(toState.url == '/basket' && fromState.url != '/basket' ){
                 $ionicLoading.show();
                 $rootScope.$emit('updateBasket');
             }

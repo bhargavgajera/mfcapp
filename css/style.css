@@ -209,7 +209,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 
 
 .login-page { background: url(../img/bg.jpg) no-repeat center center;}
-.login-page .logo {text-align: center; padding: 20px;}
+.login-page .logo {text-align: center; padding:0 20px 20px;}
 .login-page .logo img {width: 100%;}
 .login-page  form { margin: 0 auto; width: 100%; padding: 0 60px;}
 .login-page label.item-input { margin: 10px 0; border-radius: 60px; border-color: #a7bdde; border-width: 2px; background: none; }
@@ -219,7 +219,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .login-page .button:focus, .login-page .button.activated {background-color: #69B832;}
 .login-page .scroll{ height: 99.8%;}
 .login-page .forgot-link { color: #fff; text-decoration: none; text-align: center; display: inline-block;}
-.login-block { width: 100%; max-width: 400px; position: absolute; left: 50%; -webkit-transform: translate(-50%,-50%); -ms-transform: translate(-50%,-50%); transform: translate(-50%,-50%); top: 50%; text-align: center;}
+.login-block { width: 90%; max-width: 400px; position: absolute; left: 50%; -webkit-transform: translate(-50%,-50%); -ms-transform: translate(-50%,-50%); transform: translate(-50%,-50%); top: 50%; text-align: center;}
 
 .login-page input::-moz-placeholder,.login-page textarea::-moz-placeholder {color: #eee; }
 .login-page input:-ms-input-placeholder,textarea:-ms-input-placeholder {  color: #eee; }
@@ -229,7 +229,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .login-page .item.error {border-color: yellow; color: yellow;}
 
 
-.sync-block {width: 90%; max-width: 90%; text-align: center; margin: 0 auto; position: relative; top: 50%; transform: translateY(-50%); -webkit-transform: translateY(-50%);}
+.sync-block {width: 90%; max-width: 400px; text-align: center; margin: 0 auto; position: relative; top: 50%; transform: translateY(-50%); -webkit-transform: translateY(-50%);}
 .sync-block .list-inset { text-align: left; background: none; margin: 0 0 10px;}
 .sync-block .list-inset .item { background: none; color: #fff; border-color: #fff; padding-top: 10px; padding-bottom: 10px;}
 
@@ -322,6 +322,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .dateorder-page .list .item:nth-child(even) { background: #F0F0F0;}
 .dateorder-page .qty-block .button {height: 20px;padding: 0 8px;line-height: 26px;min-height: 26px;}
 
+
 .orderform { width: 30%;display: inline-block;vertical-align: middle;padding-left:10px;}
 .orderform .item-select  { display: block;}
 .orderform .item-select select { width: 100%; max-width: none;}
@@ -366,8 +367,16 @@ table td .button { vertical-align: middle;}
 input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-align: middle; border-radius: 4px; padding: 0 10px;}
 .table-wrapper .label { color: #333333; display: inline; padding-right:20px;}
 
-.basket-page .simple-input{ text-align: right; width: 100px; }
+
+.basket-page .basketqty { width: 80px;}
+.basket-page .unitprice { width: 150px;}
+.basket-page .priceexvat { width: 150px;}
+.basket-page .priceincvat { width: 100px;}
+
+
+.basket-page .simple-input{ text-align: right; width: 90px; }
 .basket-page .simple-input.input-disabled { background: #D9E8F2; border-color: #D9E8F2}
+.basket-page .qty .simple-input { width: 70px;}
 
 .search-msg .slideInUp { font-size: 21px;}
 .popup-container .popup-title { color: #886aea;}
@@ -472,16 +481,18 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .table-wrapper table td.qty{ width: calc(100% - 80px); padding-left:0px; text-align: right;}
     .table-wrapper table td .item-select { width: 100%;}
     .table-wrapper table td .simple-input{ width:100%;}
+    .basket-page .qty .simple-input {width:100%;}
     .table-wrapper table td .qty-input{ width:calc(100% - 100px);}
     .table-wrapper table td.delete{ width: 80px;}
     .table-wrapper table td.price { width: 100%; text-align: right;}
     .table-wrapper table td.exvat { width: 100%; text-align: right; padding-right:30px; }
     .table-wrapper table td.incvat { width: 100%;text-align: right;padding-right:30px;}
-    .table-wrapper table tr.gray  td:last-child { padding-right:30px; padding-left: 5px;}
+    .table-wrapper table tr.gray  td:last-child { padding-right:30px; padding-left: 5px; text-align: right;}
     .table-wrapper table tr.grandtotal  td:last-child { padding-right:30px;padding-left: 5px;}
     .table-wrapper table tr > td:first-child { width:100%;}
-    .table-wrapper .label {padding-right:0px;}
-    .table-wrapper p.label
+    .table-wrapper .label {padding-right:0px; display: inline-block; width: 60%;}
+    .table-wrapper .label .phone-title { float: left;}
+    .table-wrapper .label .price { color: #0065A4;}
     
     
     .productlist .list .container { display: block; font-size: 12px;}
@@ -513,6 +524,8 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     
     .order-page  .item-input-wrapper { background: #fff; border:solid 1px #ccc; width: 220px; display: inline-block;}
     .order-page .item-option .button .icon { line-height: 32px;}
+    
+    .dateorder-page .qty-block .button.showmore i{ position: relative; top: -2px;}
 }
 
 

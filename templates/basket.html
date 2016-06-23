@@ -8,12 +8,12 @@
             <div class="table-wrapper">
                 <table>
                     <tr>
-                        <th>Product</th>
-                        <th width="120">Quantity</th>
-                        <th>Remove</th>
-                        <th align="center">Unit Price(ex VAT)</th>
-                        <th align="center" width="150">Total (ex VAT)</th>
-                        <th align="center" width="100">Total (incVAT)</th>
+                        <th class="productname">Product</th>
+                        <th width="120" class="basketqty">Quantity</th>
+                        <th class="delproduct">Remove</th>
+                        <th align="center" class="unitprice">Unit Price(ex VAT)</th>
+                        <th align="center" class="priceexvat">Total (ex VAT)</th>
+                        <th align="center" class="priceincvat">Total (incVAT)</th>
                     </tr>
 
                     <tr ng-repeat="product in basketList track by $index">
@@ -33,7 +33,7 @@
                         <td valign="top" class="delete hide-phone">
                             <button class="button button-positive button-small button-outline" ng-click="deleteProduct(product.basketID)"><i class="ico-delete icon-big"></i></button>
                         </td>
-                        <td valign="top" class="price">
+                        <td valign="top" class="price unitprice">
                             <button class="button button-small button-clear" ng-if="mUser.CustType == 3" ng-class="{'button-stable':!priceData[$index].tbc,'button-positive':priceData[$index].tbc}" ng-click="priceData[$index].tbc = !priceData[$index].tbc;UpdateProductTbc(product.basketID,priceData[$index].tbc)"><i class="ico-right icon-big"></i></button>
                             <input type="number" class="simple-input qty-input" ng-model="priceData[$index].uprice" ng-show="!priceData[$index].tbc" placeholder="Unit Price (ex VAT)" ng-blur="updatePrice(product.basketID,priceData[$index].uprice)" ng-class="{'input-disabled':canChangePrice}" ng-disabled="canChangePrice">
                             <input type="text" class="simple-input qty-input" ng-show="priceData[$index].tbc" value="TBC" disabled>

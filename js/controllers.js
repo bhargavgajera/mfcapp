@@ -183,42 +183,7 @@ angular.module('starter.controllers', [])
             });
         }
 
-        /*$rootScope.intMarquee = function(){
-            var txt = $("#marqueetext");
-            txt.bind('scroll', function () {
-                var el = $(this);
-                // Scroll state machine
-                var scrollState = el.data("scrollState") || 0;
-                el.data("scrollState", (scrollState + 1) % 4);
-                switch (scrollState) {
-                    case 0: // initial wait
-                        el.css({ left: 0 });
-                        el.show();
-                        window.setTimeout(function () {
-                            el.trigger("scroll");
-                        }, 5000);
-                        break;
-                    case 1: // start scroll
-                        var delta = el.parent().width() - el.width();
-                        if (delta < 0) {
-                            el.animate({ left: delta }, 2000, "linear", function () {
-                                el.trigger("scroll");
-                            });
-                        }
-                        break;
-                    case 2: // delay before scroll back
-                        window.setTimeout(function () {
-                            el.trigger("scroll");
-                        }, 1000);
-                        break;
-                    case 3: // fade out
-                        el.fadeOut("slow", function () {
-                            el.trigger("scroll");
-                        });
-                        break;
-                }
-            }).trigger("scroll");
-        }*/
+       
 
 
         $rootScope.loadOrders = function () {
@@ -1191,9 +1156,9 @@ angular.module('starter.controllers', [])
     $scope.canChangePrice = true;
     $scope.canChangePrice = $scope.mUser.CustType == 1 || $scope.mUser.CustType == 2 || $scope.mUser.CustType == 3 ? false : true;
 
-    $ionicLoading.show({
+    /*$ionicLoading.show({
         template: '<img src="img/loader.gif">'
-    });
+    });*/
 
    /* $scope.$on('$ionicView.enter', function() {
      
@@ -1343,12 +1308,6 @@ angular.module('starter.controllers', [])
                     console.log("Error on loading: " + error.message);
                 });
 
-       /* $scope.$on('$ionicView.enter', function() {
-            $timeout(function () {
-                $rootScope.intMarquee();
-            }, 20);
-        })    */
-
         $rootScope.popup = $ionicPopup.alert({
             title: 'Order placed',
             template: 'Your order has been placed successfully',
@@ -1493,15 +1452,6 @@ angular.module('starter.controllers', [])
 .controller('myaccountCtrl', function ($scope, $rootScope, $state, $timeout, $ionicHistory, $ionicViewService, $cordovaSQLite,$timeout) {
     scope = $scope;
 
-   /* $scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-            $rootScope.intMarquee();
-        }, 20);
-        
-    })*/
-    
-
-
 
     $scope.$on('$ionicView.enter', function() {
         if($rootScope.mAccount != "" && $rootScope.mAccount != null){
@@ -1538,12 +1488,7 @@ angular.module('starter.controllers', [])
     scope = $scope;
     $scope.accountPage = $state.current.url.replace("/", "");
 
-    /*$scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-             $rootScope.intMarquee();
-        }, 20);
-
-    })*/
+   
 })
 
 .controller('accountsCtrl', function ($rootScope, $scope, $ionicLoading, $ionicPopup, $http, $state, $filter, $timeout, $cordovaSQLite, $ionicPlatform, $cordovaKeyboard, $ionicScrollDelegate, $ionicHistory) {
@@ -1883,11 +1828,6 @@ angular.module('starter.controllers', [])
     }
 
 
-    /*$scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-            $rootScope.intMarquee();
-        }, 20);
-    })   */ 
 
     $scope.searchOrder = function (searchtext) {
         if (searchtext != "") {
@@ -2135,11 +2075,7 @@ angular.module('starter.controllers', [])
             }
     });
 
-    /*$scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-            $rootScope.intMarquee();
-        }, 20);
-    })  */ 
+   
 
 
     $scope.NotAvailableProduct = [];
@@ -2233,12 +2169,6 @@ angular.module('starter.controllers', [])
         $rootScope.productTitle = currentCat.catTitle;
     }
 
-   /* $scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-             $rootScope.intMarquee();
-        }, 20);
-    })  */
-    
 
     $scope.$on('eventName', function (event, args) {
         var currentCat = $filter('filter')($rootScope.categoryList, {
@@ -2281,11 +2211,6 @@ angular.module('starter.controllers', [])
     $scope.ParentProduct = [];
     $scope.CurrentConfigurable = [];
 
-    /*$scope.$on('$ionicView.enter', function() {
-        $timeout(function () {
-             $rootScope.intMarquee();
-        }, 20);
-    })   */
     
     $scope.data = {
         Qty: 1,
