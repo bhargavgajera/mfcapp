@@ -1195,12 +1195,13 @@ angular.module('starter.controllers', [])
         template: '<img src="img/loader.gif">'
     });
 
-    $scope.$on('$ionicView.enter', function() {
-     $rootScope.$emit('updateBasket');
-        /*$timeout(function () {
-            $rootScope.intMarquee();
-        }, 20);*/
-    })    
+   /* $scope.$on('$ionicView.enter', function() {
+     
+        $timeout(function () {
+            //$rootScope.intMarquee();
+            $rootScope.$emit('updateBasket');
+        }, 20);
+    })   */ 
     
     $scope.deleteProduct = function (Id) {
 
@@ -1443,7 +1444,7 @@ angular.module('starter.controllers', [])
             $scope.searchproductLength = 0;
             $scope.productSearch = '';
             $scope.pageNum = 0;
-            $scope.searchpro = 0; 
+            $scope.searchpro = 1; 
 
         }
 
@@ -1805,15 +1806,18 @@ angular.module('starter.controllers', [])
         for (var i = 0; i < tempBasketlist.length; i++) {
             $cordovaSQLite.execute($rootScope.DB, 'select qnt from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[i].ProdID)
             .then(function (result) {
+                var ProTitle = tempBasketlist[cnt].ProdTitle.replace('\"','\"\"');
+                
                 if(result.rows.length > 0){
                     var totalQty = tempBasketlist[cnt].qnt + result.rows.item(0).qnt;
-                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+tempBasketlist[cnt].ProdTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+totalQty+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result1) {
+                    
+                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+ProTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+totalQty+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result1) {
                         $rootScope.$emit('updateBasket');
 
                     });
 
                 } else{
-                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+tempBasketlist[cnt].ProdTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+tempBasketlist[cnt].qnt+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result2) {
+                    $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = '+nID+' AND ProdID='+tempBasketlist[cnt].ProdID+'),'+tempBasketlist[cnt].ProdID+',"'+ProTitle+'", "'+tempBasketlist[cnt].ProdUnitPrice+'", '+tempBasketlist[cnt].qnt+', '+tempBasketlist[cnt].stokQnt+', '+tempBasketlist[cnt].PriceExVat+', '+tempBasketlist[cnt].PriceIncVat+','+tempBasketlist[cnt].Vat+', '+nID+')').then(function (result2) {
                         $rootScope.$emit('updateBasket');
 
                     });
@@ -2068,7 +2072,8 @@ angular.module('starter.controllers', [])
                                     qty = qty + result.rows.item(0).qnt;
                                 }
                                 vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
-                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'", "'+qty+'", "'+stokQnt+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                                                    
+                                var ProTitle = Title.replace('\"','\"\"');
+                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'", "'+qty+'", "'+stokQnt+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                                                    
                                 //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt, stokQnt, PriceExVat, PriceIncVat, Vat) VALUES (?,?,?,?,?,?,?,?)', [Id, Title, price, qty, stokQnt, PriceExVat, PriceIncVat, vat.toFixed(2)])
                                     .then(function (result) {
                                         $rootScope.popup = $ionicPopup.alert({
@@ -2173,6 +2178,7 @@ angular.module('starter.controllers', [])
     $scope.dateOrdertoBasket = function (Id, ptitle, title, price, qty, StockQty, PriceExVat, PriceIncVat) {
 
         var Title = (ptitle) ? ptitle + ' - ' + title : title;
+        Title = Title.replace('\"','\"\"');
         $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM basket WHERE ProdID = "' + Id + '" AND UserID = '+$rootScope.mAccount.AccountId).then(function (result) {
             $ionicLoading.hide();
             if (result.rows.length > 0) {
@@ -2426,9 +2432,9 @@ angular.module('starter.controllers', [])
 
                 $cordovaSQLite.execute($rootScope.DB, 'select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id)
                     .then(function (result) {
-
+                        var ProTitle = Title.replace('\"','\"\"');
                         if(result.rows.length > 0){
-                            $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'",((select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id+')+'+qty+'), "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
+                            $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'",((select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id+')+'+qty+'), "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
                             //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
                                 .then(function (result) {
                                     $rootScope.popup = $ionicPopup.alert({
@@ -2441,7 +2447,7 @@ angular.module('starter.controllers', [])
                                     console.log("Error on saving: " + error.message);
                                 })                        
                         }else{
-                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'",'+qty+', "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
+                                $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'",'+qty+', "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
                                 //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
                                 .then(function (result) {
                                     $rootScope.popup = $ionicPopup.alert({

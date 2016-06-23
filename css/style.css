@@ -177,6 +177,7 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .mainmenu > .list { position: static;}
 .mainmenu > .list > li > .item{ border: none; padding:25px 60px;box-shadow:0px 3px  5px rgba(0,0,0,.5) inset; position: relative; background: none;}
 .mainmenu .list .item .icon { opacity: 0.6; filter: alpha(opacity=60);}
+.main-item > li:last-child:after {display: block;content: "";color: red;position: relative;box-shadow: 0px 3px 5px rgba(0,0,0,.3) inset;height: 10px;position: relative;top: 11px;}
 
 .bg-farm, .item.bg-farm  {background-color:#007145; color: #fff;}
 .bg-horse, .item.bg-horse { background-color:#731640; color: #fff;}
@@ -228,9 +229,9 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .login-page .item.error {border-color: yellow; color: yellow;}
 
 
-.sync-block {width: 100%; max-width: 400px; text-align: center; margin: 0 auto;}
-.sync-block .list-inset { text-align: left; background: none;}
-.sync-block .list-inset .item { background: none; color: #fff; border-color: #fff; }
+.sync-block {width: 90%; max-width: 90%; text-align: center; margin: 0 auto; position: relative; top: 50%; transform: translateY(-50%); -webkit-transform: translateY(-50%);}
+.sync-block .list-inset { text-align: left; background: none; margin: 0 0 10px;}
+.sync-block .list-inset .item { background: none; color: #fff; border-color: #fff; padding-top: 10px; padding-bottom: 10px;}
 
 
 .myaccount-page{ background: #F0F0F0;}
@@ -398,7 +399,7 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 
 .sync-popup .item { background: none; color: #fff; border: none; border-radius: 6px;}
 .nopriceCard { max-width: 768px; margin: 20px auto !important; border: none; box-shadow: none; background: #cc3333;font-family: 'robotoregular'; }
-.nopriceCard .item { background: none; color: #fff; text-transform: uppercase;}
+.nopriceCard .item { background: none; color: #fff; text-transform: uppercase; font-size: 14px;}
 .fullbutton { display: block; padding: 20px; width: 100%; overflow: hidden; clear: both;}
 .fullbutton .button { display: block; max-width: 400px; width: 100%;}
 
@@ -453,7 +454,8 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .order-page .list .item,.order-page .list .item.date-item { padding: 10px 10px;}
     .order-page .item-option .item-select select{ width:170px; direction: ltr;}
     .order-page .list .item-option { padding:30px 10px;}
-    .order-page .meta span { display: block}
+    .order-page .meta { margin-top: 20px;}
+    .order-page .meta span { display: block;}
     .order-page .meta em { display: none}
     
     .checkout-detail { display: block;}
@@ -467,9 +469,10 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .table-wrapper table tr { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-flex-wrap: wrap; -ms-flex-wrap: wrap; flex-wrap: wrap;  -webkit-box-pack:end;  -webkit-justify-content:flex-end;  -ms-flex-pack:end;  justify-content:flex-end;}
     .table-wrapper .cell-mrg { display: none;}
     
-    .table-wrapper table td.qty{ width: calc(100% - 80px); padding-left:0px; }
+    .table-wrapper table td.qty{ width: calc(100% - 80px); padding-left:0px; text-align: right;}
     .table-wrapper table td .item-select { width: 100%;}
-    .table-wrapper table td .simple-input{ width:calc(100% - 60px);}
+    .table-wrapper table td .simple-input{ width:100%;}
+    .table-wrapper table td .qty-input{ width:calc(100% - 100px);}
     .table-wrapper table td.delete{ width: 80px;}
     .table-wrapper table td.price { width: 100%; text-align: right;}
     .table-wrapper table td.exvat { width: 100%; text-align: right; padding-right:30px; }
@@ -478,15 +481,22 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .table-wrapper table tr.grandtotal  td:last-child { padding-right:30px;padding-left: 5px;}
     .table-wrapper table tr > td:first-child { width:100%;}
     .table-wrapper .label {padding-right:0px;}
+    .table-wrapper p.label
+    
     
     .productlist .list .container { display: block; font-size: 12px;}
     .productlist .item-complex .item-content { padding: 15px;}
     .productlist .price-block .errmsg { font-size: 12px;}
-    .productlist .id { width: 15%; display: inline-block; vertical-align: middle;}
-    .productlist .title { padding:0 5px; width: 45%; white-space: normal;display: inline-block;vertical-align: middle; line-height: normal;}
-    .productlist .price-block {white-space: normal;display: inline-block;width: 35%;vertical-align: middle;}
+    .productlist .id { width: 15%; display: inline-block; vertical-align: middle;font-size: 13px;}
+    .productlist .title { padding:0 5px; width: 45%; white-space: normal;display: inline-block;vertical-align: middle; line-height: normal; font-size: 13px;}
+    .productlist .price-block {white-space: normal;display: inline-block;width: 35%;vertical-align: middle; font-size: 13px;}
+    
+    .productlist .price-block .price { font-size: 13px;}
+    .productlist .price-block .price i { font-size: 11px;}
+    
     .bar.bar-stable .title {  text-align: center; font-size: 14px;font-family: 'robotobold';}
     .productlist-page .bar.bar-stable .title { text-align: left;}
+    
     
     .product-wrapper { width: 100%; padding: 10px;}
     .product-wrapper .row { display: block; padding: 0px;}
@@ -496,7 +506,8 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
     .product-page .bar-subheader .title{ display: none;}
     .product-page .sort { display: none;}
     
-    .product-meta .row{display: -webkit-box;display: -webkit-flex; display: -moz-box;display: -moz-flex;display: -ms-flexbox;display: flex; padding:5px 0;}
+    .product-meta { padding: 10px 0; font-size: 13px;}
+    .product-meta .row{display: -webkit-box;display: -webkit-flex; display: -moz-box;display: -moz-flex;display: -ms-flexbox;display: flex; padding:0px 0;}
     .product-meta .row .col:first-child { padding-left: 0px;}
     .product-meta .row .col:last-child { padding-right: 0px;}
     

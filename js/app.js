@@ -12,7 +12,7 @@ var hash = bcrypt.hashSync("B4c0/\/", salt);
 
 App = angular.module('starter', ['ionic', 'starter.controllers','ngCordova'])
 
-App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen,$timeout) {
+App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordovaNetwork,$cordovaSplashscreen,$timeout,$ionicLoading) {
     
      //$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Accounts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'RelatedProduct',sync:false},{title:'Orderhistory',sync:false}]; 
 	$rootScope.syncObj = [{title:'Contacts',sync:false},{title:'Products',sync:false},{title:'Categories',sync:false},{title:'Related Product',sync:false}]; 
@@ -86,6 +86,7 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		  $rootScope.isOffline = $cordovaNetwork.isOffline();
     })
     
+
     
     $ionicPlatform.ready(function () {        
         if (!window.isTablet)
@@ -163,7 +164,14 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 				});
 		   
         $rootScope.$emit('updateBasket');
-        
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+            console.log(toState);
+            if(toState.url = '/basket'){
+                $ionicLoading.show();
+                $rootScope.$emit('updateBasket');
+            }
+        })
         if ($cordovaNetwork.isOnline() && $rootScope.tokenExpireDate == null) {
             $rootScope.getToken();
         }
