@@ -340,9 +340,9 @@ input, button, select, textarea {font-family: 'robotoregular'; -webkit-appearanc
 .productlist .list .container{ display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;}
 .productlist .list .item { border-top: none; border-bottom: none;}
 .productlist .list .item:nth-child(even) .item-content{ background-color: #F0F0F0;}
-.productlist .id{ -webkit-box-flex:0; -webkit-flex:0 0 10%; -ms-flex:0 0 10%; flex:0 0 10%}
-.productlist .title{ -webkit-box-flex:0; -webkit-flex:0 0 70%; -ms-flex:0 0 70%; flex:0 0 60%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
-.productlist .price-block{ -webkit-box-flex:0; -webkit-flex:0 0 20%; -ms-flex:0 0 20%; flex:0 0 30%; text-align: right;}
+.productlist .id{ -webkit-box-flex:0; -webkit-flex:0 0 15%; -ms-flex:0 0 15%; flex:0 0 15%}
+.productlist .title{ -webkit-box-flex:0; -webkit-flex:0 0 55%; -ms-flex:0 0 55%; flex:0 0 55%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+.productlist .price-block{ -webkit-box-flex:0; -webkit-flex:0 0 30%; -ms-flex:0 0 30%; flex:0 0 30%; text-align: right;}
 .productlist .price-block .errmsg { text-transform: uppercase;font-size: 14px;}
 .productlist .price-block .price { width: 100%; text-align: right;}
 .productlist .price-block .price span {padding:0 5px;}
