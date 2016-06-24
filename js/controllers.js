@@ -1339,9 +1339,73 @@ angular.module('starter.controllers', [])
     $scope.searchpro = 1;
 
 
+    $scope.clearSearch = function(){
+        $scope.productSearch = "";
+    }
 
-	$scope.$on('$ionicView.enter', function() {
-	    document.getElementById("productSearch").focus();
+
+	$scope.searchProduct = function (searchtext) {
+        if (searchtext != "") {
+            $cordovaKeyboard.close();
+            $ionicScrollDelegate.$getByHandle('mainScroll').scrollTop();
+            $scope.searchproductList = [];
+            $scope.productSearch = searchtext;
+            $scope.pageNum = 0;
+            
+			$cordovaSQLite.execute($rootScope.DB, 'INSERT INTO searchText (word) VALUES("'+searchtext+'")');
+            $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = 0 AND ProdTitle like "%' + searchtext + '%" ').then(function(result){
+            $scope.searchproductLength = result.rows.length;
+            })
+        } else {
+            $ionicScrollDelegate.$getByHandle('mainScroll').scrollTop();
+            $scope.searchproductList = [];         
+            $scope.searchproductLength = 0;
+            $scope.productSearch = '';
+            $scope.pageNum = 0;
+
+        }
+
+    }
+
+    $scope.loadMoreProduct = function(searchtext) {
+    	var searchtext = $scope.productSearch;
+        var pageOffset = 0;
+        if($scope.pageNum > 0){
+           pageOffset =  $scope.pageNum * $scope.limitData;    
+        }
+
+     
+        $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = 0 AND ProdTitle like "%' + searchtext + '%"  LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
+            .then(
+                function (result) {
+                    $ionicLoading.hide();
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
+                    if (result.rows.length > 0) {
+                        for (var i = 0; i < result.rows.length; i++) {
+                            $scope.searchproductList.push(result.rows.item(i));                            
+                        }
+                       $scope.pageNum = $scope.pageNum + 1;
+                    }
+                },
+                function (error) {
+                    $ionicLoading.hide();
+                    $scope.$broadcast('scroll.infiniteScrollComplete');
+                    $rootScope.popup = $ionicPopup.alert({
+                        title: 'Error',
+                        template: 'Something went wrong'
+                    });
+                    console.log("Error on loading: " + error.message);
+                });
+
+    }
+
+
+
+    $scope.$on('$ionicView.enter', function() {
+        $scope.clearSearch();
+        $ionicScrollDelegate.$getByHandle('mainScroll').scrollTop();
+        document.getElementById("productSearch").focus();
+        $scope.searchProduct('');
 
         $cordovaSQLite.execute($rootScope.DB, 'SELECT word FROM searchText group by word order by ID DESC LIMIT 5').then(function (result) {
 
@@ -1365,85 +1429,7 @@ angular.module('starter.controllers', [])
             console.log("Error on loading: " + error.message);
         }); 
 
-	})    
-
-   
-
-
-    $scope.clearSearch = function(){
-        $scope.productSearch = "";
-    }
-
-
-
-
-
-
-
-	$scope.searchProduct = function (searchtext) {
-        if (searchtext != "") {
-            $cordovaKeyboard.close();
-            $scope.searchproductList = [];
-            $scope.searchproductLength = 0;
-            $scope.productSearch = searchtext;
-            $scope.pageNum = 0;
-            
-			$cordovaSQLite.execute($rootScope.DB, 'INSERT INTO searchText (word) VALUES("'+searchtext+'")');
-            $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = 0 AND ProdTitle like "%' + searchtext + '%" ').then(function(result){
-            $scope.searchproductLength = result.rows.length;
-                if($scope.searchproductLength == 0){
-                    $scope.searchpro = 0;    
-                }else{
-                    $scope.searchpro = 1;   
-                }
-            })
-        } else {
-            $scope.searchproductList = [];
-           
-            $scope.searchproductLength = 0;
-            $scope.productSearch = '';
-            $scope.pageNum = 0;
-            $scope.searchpro = 1; 
-
-        }
-
-    }
-
-    $scope.loadMoreProduct = function(searchtext) {
-    	var searchtext = $scope.productSearch;
-    	console.log($scope.pageNum);
-        var pageOffset = 0;
-        if($scope.pageNum > 0){
-           pageOffset =  $scope.pageNum * $scope.limitData;    
-        }
-
-     
-        $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM products WHERE ProdParentID = 0 AND ProdTitle like "%' + searchtext + '%"  LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
-            .then(
-                function (result) {
-                    $ionicLoading.hide();
-                    $scope.$broadcast('scroll.infiniteScrollComplete');
-                    if (result.rows.length > 0) {
-                        for (var i = 0; i < result.rows.length; i++) {
-                            $scope.searchproductList.push(result.rows.item(i));                            
-                        }
-                       $scope.pageNum = $scope.pageNum + 1;
-                    }
-                    if($scope.pageNum == 0 || $scope.pageNum == 1){
-                    	$ionicScrollDelegate.resize();
-                    }
-                },
-                function (error) {
-                    $ionicLoading.hide();
-                    $scope.$broadcast('scroll.infiniteScrollComplete');
-                    $rootScope.popup = $ionicPopup.alert({
-                        title: 'Error',
-                        template: 'Something went wrong'
-                    });
-                    console.log("Error on loading: " + error.message);
-                });
-
-    }
+    })        
 
 
 
@@ -1524,7 +1510,6 @@ angular.module('starter.controllers', [])
     //console.log($ionicHistory.backView());
 
      $scope.loadMore = function() {
-            console.log('accountctrl');
             if($scope.data.accountSearch != ''){
                 $scope.accountFilter($scope.data.accountSearch);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -1534,22 +1519,13 @@ angular.module('starter.controllers', [])
                    pageOffset =  $scope.pageNum * $scope.limitData;    
                 }
                 querystr = 'SELECT * FROM accounts';
-               // queryctn = 'SELECT count(*) FROM accounts';
                 if ($rootScope.mUser.CustType == 7){
                         var ID = $rootScope.mUser.RelatedAccountNumber;
                         querystr = 'SELECT * FROM accounts where AccountNumber="'+ID+'" ';
-                        //queryctn = 'SELECT count(*) FROM accounts where AccountNumber="'+ID+'" ';
                 } else if($rootScope.mUser.CustType == 3){
                         var ID = $rootScope.mUser.CustRepTerritory;
                         querystr = 'SELECT * FROM accounts where AccountTerritory="'+ID+'" ';
-                        //queryctn = 'SELECT count(*) FROM accounts where AccountTerritory="'+ID+'"';
                 }
-               /* if ($scope.pageNum == 0)
-                {
-                    $cordovaSQLite.execute($rootScope.DB, queryctn).then(function(result){
-                        $scope.accountListLength = result.rows.item(0)['count(*)'];
-                    })
-                }*/
                 $cordovaSQLite.execute($rootScope.DB, querystr+' ORDER BY AccountNumber LIMIT '+$scope.limitData+' OFFSET '+pageOffset)
                     .then(
                         function (result) {
@@ -1588,7 +1564,6 @@ angular.module('starter.controllers', [])
         if(searchtext == ''){
             return false;
         }
-        //console.log('accountFilter');
         var pageOffset = 0;
         if($scope.pageSeachNum > 0){
            pageOffset =  $scope.pageSeachNum * $scope.limitData;    
@@ -1628,7 +1603,6 @@ angular.module('starter.controllers', [])
 
     $scope.AccountRoleManagement = function (searchtext) {
         $sWhere = '';
-        //AccountCompany like "%' + searchtext + '%" OR AccountNumber like "%' + searchtext + '%"
         if ($rootScope.mUser.CustType == 1 || $rootScope.mUser.CustType == 2) {
             if (searchtext.length > 0) {
                 $sWhere += ' WHERE AccountCompany like "%' + searchtext + '%" OR AccountNumber like "%' + searchtext + '%"';
@@ -1684,7 +1658,6 @@ angular.module('starter.controllers', [])
             
             $ionicScrollDelegate.resize();
             $scope.loadMore();
-            //console.log("No");
         }
     }
 
@@ -1741,10 +1714,6 @@ angular.module('starter.controllers', [])
 
 
     $scope.SwitchFrom = function(nID,oID) {
-
-        //$cordovaSQLite.execute($rootScope.DB, 'DELETE FROM basket where UserID ='+nID).then(function (result) {}); 
-        //$rootScope.$emit('updateBasket');
-
 
         var tempBasketlist = angular.copy($scope.basketList);
         var cnt = 0;
@@ -2015,7 +1984,6 @@ angular.module('starter.controllers', [])
                                 vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
                                 var ProTitle = Title.replace(/\"/g,'\"\"');
                                 $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'", "'+qty+'", "'+stokQnt+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                                                    
-                                //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt, stokQnt, PriceExVat, PriceIncVat, Vat) VALUES (?,?,?,?,?,?,?,?)', [Id, Title, price, qty, stokQnt, PriceExVat, PriceIncVat, vat.toFixed(2)])
                                     .then(function (result) {
                                         $rootScope.popup = $ionicPopup.alert({
                                             title: 'Added into basket',
@@ -2065,7 +2033,6 @@ angular.module('starter.controllers', [])
 
     var frTom = frToday.setDate(frToday.getDate()+1);
 
-    //$cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM order_history WHERE orderHistoryNumericDate>="'+frTime+'" AND orderHistoryNumericDate<"'+frTom+'" AND accountNumber = "' + $rootScope.mAccount.AccountNumber + '" order by orderHistoryNumericDate DESC')
     $cordovaSQLite.execute($rootScope.DB, 'SELECT * FROM order_history as h1 LEFT JOIN products as p1 ON h1.prodID = p1.ProdID WHERE h1.orderHistoryNumericDate>="'+frTime+'" AND h1.orderHistoryNumericDate<"'+frTom+'" AND h1.accountNumber = "' + $rootScope.mAccount.AccountNumber + '" order by h1.orderHistoryNumericDate DESC')
     .then(
         function (result) {
@@ -2122,7 +2089,6 @@ angular.module('starter.controllers', [])
                 qty = qty + result.rows.item(0).qnt;
             }
             var vat = (100 * (PriceIncVat - PriceExVat)) / PriceExVat;
-           // console.log(vat.toFixed(2));
             
             $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+Title+'", "'+price+'", "'+qty+'", "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')
                 .then(function (result) {
@@ -2336,8 +2302,6 @@ angular.module('starter.controllers', [])
         }
 
         if (!qty) {
-           // console.log("qty :");
-          //  console.log(qty);
             $rootScope.popup = $ionicPopup.alert({
                 title: 'Add quantity ',
                 cssClass: 'popup-error',
@@ -2361,7 +2325,6 @@ angular.module('starter.controllers', [])
                         var ProTitle = Title.replace(/\"/g,'\"\"');
                         if(result.rows.length > 0){
                             $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'",((select qnt from basket where UserID = '+$rootScope.mAccount.AccountId+' AND ProdID='+Id+')+'+qty+'), "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
-                            //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
                                 .then(function (result) {
                                     $rootScope.popup = $ionicPopup.alert({
                                         title: 'Added into basket',
@@ -2374,7 +2337,6 @@ angular.module('starter.controllers', [])
                                 })                        
                         }else{
                                 $cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (basketID, ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES ((select basketID from basket where UserID = "'+$rootScope.mAccount.AccountId+'" AND ProdID='+Id+'),'+Id+', "'+ProTitle+'", "'+price+'",'+qty+', "'+StockQty+'", "'+PriceExVat+'", "'+PriceIncVat+'", "'+vat.toFixed(2)+'", "'+$rootScope.mAccount.AccountId+'")')                    
-                                //$cordovaSQLite.execute($rootScope.DB, 'INSERT OR REPLACE INTO basket (ProdID, ProdTitle, ProdUnitPrice, qnt,stokQnt, PriceExVat, PriceIncVat, Vat, UserID) VALUES (?,?,?,?,?,?,?,?,?)', [Id, Title, price, qty, StockQty, PriceExVat, PriceIncVat, vat.toFixed(2), $rootScope.mAccount.AccountId])
                                 .then(function (result) {
                                     $rootScope.popup = $ionicPopup.alert({
                                         title: 'Added into basket',

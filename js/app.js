@@ -110,22 +110,15 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX accounts_idx1 ON accounts(AccountCompany,AccountNumber)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS order_history (OrderHistoryID INTEGER PRIMARY KEY AUTOINCREMENT, costPrice REAL, operaCostPrice REAL, unitCost REAL, accountNumber TEXT, orderHistoryTitle TEXT, prodID INTEGER, prodTitle TEXT, prodPrice REAL, orderHistoryDate TEXT, prodHidePrice TEXT, prodStockQty INTEGER, parentTitle TEXT, quantity INTEGER, orderHistoryNumericDate INTEGER, userId INTEGER)');
         
-         $cordovaSQLite.execute($rootScope.DB,'ALTER TABLE order_history ADD COLUMN orderHistoryNumericDate INTEGER');
-         $cordovaSQLite.execute($rootScope.DB,'ALTER TABLE order_history ADD COLUMN userId INTEGER');
-
-		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE INDEX order_history_idx1 ON order_history(prodID,AccountNumber)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER,stokQnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0)');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS basket ( basketID INTEGER PRIMARY KEY AUTOINCREMENT, ProdID INTEGER, ProdTitle TEXT, ProdUnitPrice REAL, qnt INTEGER,stokQnt INTEGER, PriceExVat REAL, PriceIncVat REAL, Vat REAL, isTBC INTEGER DEFAULT 0, UserID INTEGER)');
 
-         $cordovaSQLite.execute($rootScope.DB, 'ALTER TABLE basket ADD COLUMN UserID INTEGER');
-        
 		 //$cordovaSQLite.execute($rootScope.DB, 'CREATE UNIQUE INDEX IF NOT EXISTS ProdIDIndex ON basket (ProdID)');
 		 
-		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT)');
-          $cordovaSQLite.execute($rootScope.DB, 'ALTER TABLE cart ADD COLUMN appCartID INTEGER');
+		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS cart(CartID INTEGER PRIMARY KEY AUTOINCREMENT, custID INTEGER, accountNumber TEXT, orderDate TEXT, orderTotal REAL, orderDeliveryTotal REAL, orderShipSameAsBilling INTEGER DEFAULT 0, orderShipCompany TEXT, orderShipTitle TEXT, orderShipFirstname TEXT, orderShipSurname TEXT, orderShipHouseNameNo TEXT, orderShipAddress1 TEXT, orderShipAddress2 TEXT, orderShipCity TEXT, orderShipCounty TEXT, orderShipPostcode TEXT, orderShipTelephone TEXT,orderShipMobile TEXT, orderShipFax TEXT, orderDelInstr1 TEXT, orderGiftWrap INTEGER DEFAULT 0,orderGiftWrapMessage TEXT, appCartID INTEGER)');
 		 
 		 $cordovaSQLite.execute($rootScope.DB, 'CREATE TABLE IF NOT EXISTS orderDetail(orderDetailID INTEGER PRIMARY KEY, custID INTEGER, accountNumber TEXT, cartID INTEGER, prodID INTEGER, prodTitle TEXT, prodDesc TEXT, prodPrice REAL, prodCode TEXT, VATRate REAL, quantity INTEGER, shipped TEXT, rowTotal REAL, rowTotalWithVAT REAL)');
 		 
@@ -293,19 +286,10 @@ App.run(function ($ionicPlatform,$rootScope,$cordovaDevice,$cordovaSQLite,$cordo
         }
     })
 
-    .state('app.tab.version', {
+   .state('app.tab.version', {
         url: '/version',
         views: {
             'tab-version': {
-                templateUrl: 'templates/version.html',
-                controller:'versionCtrl'
-            }
-        }
-    })
-   .state('app.version', {
-        url: '/version',
-        views: {
-            'appContent': {
                 templateUrl: 'templates/version.html'
             }
         }

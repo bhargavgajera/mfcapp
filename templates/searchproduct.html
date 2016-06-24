@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-    <ion-content class=" has-subheader" has-bouncing="true" ng-init="t='0';">
+    <ion-content class=" has-subheader" has-bouncing="true" ng-init="t='0';" delegate-handle="mainScroll">
 
 
         <!--Test Area-->
@@ -50,7 +50,7 @@
             <ion-list>
                <ion-item class="item listheading" ng-show="searchproductList.length > 1" >
                 <div class="container">
-                    <div class="id"><strong>Id</strong></div>
+                    <div class="id"><strong>Code</strong></div>
                     <div class="title" ><strong>Name</strong></div>
                     <div class="price-block"><strong>Price</strong></div>
                 </div>
@@ -66,7 +66,7 @@
                         </div>
                     </div>
                 </ion-item>
-                <ion-item class="item" ng-show="searchproductList.length < 1 && searchpro == 0">
+                <ion-item class="item" ng-show="searchproductList.length < 1 && productSearch != '' ">
                     <h4>Search Result not found</h4>
                 </ion-item>
             </ion-list>
