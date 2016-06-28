@@ -11,8 +11,8 @@
                          <h3><span ng-if="order.parentTitle">{{order.parentTitle + " - " }} </span><span ng-if="order.prodTitle">{{order.prodTitle}}</span></h3>
                        
                         <div class="qty-block"><span class="qty positive">Qty : {{order.quantity}}</span> <a class="button button-small button-positive pull-right hide-tab showmore" href="javascript:void(0)" ng-click="showContent[$index] = !showContent[$index]"><span ng-show="showContent[$index]"><i>Less -</i></span><span ng-show="!showContent[$index]"><i>More +</i></span></a></div>
-                    <p class="meta stable" ng-show="showContent[$index]" ><span>Unit Price(Unit Cost): {{order.costPrice}} ({{order.operaCostPrice}})</span> <em>|</em><span> Stock Level: {{order.	
-prodStockQty}}</span><em> |</em> <span>Current Price: TBC</span></p></div>
+                    <p class="meta stable" ng-show="showContent[$index]" ><span>Unit Price(Unit Cost): {{order.unitCost}} ({{order.operaCostPrice}})</span> <em>|</em><span> Stock Level: {{order.	
+prodStockQty}}</span><em> |</em> <span>Current Price: {{order.costPrice | currency:"£"}}</span></p></div>
               
                 <div class="orderform">
                     <div class="row">

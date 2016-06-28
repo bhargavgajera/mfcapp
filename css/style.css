@@ -421,6 +421,19 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 .input-error input {border-color: red;}
 .login-block .checkbox  { vertical-align: middle;}
 
+
+.button.button-floating {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    box-shadow: 2px 1px 2px rgba(0,0,0,.5);
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    z-index: 99;
+}
+
+
 @media screen and (min-width:768px) {
     .hide-tab { display: none !important;}
     .order-page .meta.ng-hide {
@@ -654,17 +667,3 @@ input.simple-input { border:solid 1px #ccc; display: inline-block; vertical-alig
 
 
 
-/*chirag for marquee*/
-#marqueecontainer
-{
-    display: inline-block;
-    width: 100%;
-    height: 100px;
-    overflow: hidden;
-}
-#marqueetext
-{
-    display: inline-block;
-    position: relative;
-    white-space: nowrap;
-}

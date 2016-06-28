@@ -1,8 +1,8 @@
-<ion-view view-title="Search Product" class="accounts-page">
+<ion-view view-title="Search Product" class="accounts-page" cache-view="false">
     <div class="bar bar-subheader  sub-search bar-stable ">
         <div class="container item-input-inset">
             <form ng-submit="searchProduct(productSearch)" class="search-form" novalidate>
-                <label class="item-input-wrapper">
+                <label class="item-input-wrapper" focus-me>
                     <i class="icon ico-search placeholder-icon positive"></i>
                     <input type="search" placeholder="Search Product" id = "productSearch" ng-model="productSearch" autofocus>
                     <a ng-if="productSearch.length" on-tap="clearSearch()"
